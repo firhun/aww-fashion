@@ -148,6 +148,20 @@ tr:hover td{background:#FAFAF8}
 .pres-bar .btn:hover{background:rgba(255,255,255,.2)}
 .pres-bar .btn:disabled{opacity:.35;cursor:default}
 #pres-print{display:none}
+.rin-ph{display:none}
+@media print{
+  body.prin .page:not(#page-bulanan),body.prin #page-bulanan>*:not(#rin-card){display:none!important}
+  body.prin #page-bulanan{display:block!important}
+  body.prin,body.prin .main{background:#fff!important;min-height:0}
+  body.prin #rin-card{border:none;padding:0;margin:0}
+  body.prin .rin-ph{display:block!important;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--blue)}
+  body.prin .tblw{overflow:visible;border:1px solid #ccc}
+  body.prin #rin-body table{font-size:10px}
+  body.prin #rin-body th,body.prin #rin-body td{padding:5px 6px}
+  body.prin #rin-body tr{break-inside:avoid}
+  body.prin #rin-body .sl{break-after:avoid;margin-top:6px}
+  body.prin *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 @media print{
   body.pp .app,body.pp #login-page,body.pp #pres,body.pp #pres-prep,body.pp #modal-overlay{display:none!important}
   body.pp #pres-print{display:block!important}
@@ -321,7 +335,7 @@ tr:hover td{background:#FAFAF8}
     <div id="tbl-pen"><div style="font-size:12px;color:var(--tx3)">Belum ada pengeluaran bulanan.</div></div>
   </div>
   <div class="card"><div id="bul-tbl"><div class="empty"><p>Klik Tampilkan untuk melihat rekap bulanan</p></div></div></div>
-  <div class="card">
+  <div class="card" id="rin-card">
     <div class="no-print" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin-bottom:14px">
       <div>
         <span class="sl" style="margin-bottom:3px">Rincian &amp; Presentasi Per Bulan</span>
@@ -330,6 +344,7 @@ tr:hover td{background:#FAFAF8}
       <div class="fl">
         <div><label class="lbl">Bulan</label><select id="f-bln-rin" style="width:130px"></select></div>
         <button class="btn bp" onclick="loadRincian()">Tampilkan Rincian</button>
+        <button class="btn" onclick="cetakRincian()">🖨 Print Rincian</button>
         <button class="btn bg" onclick="mulaiPresentasi()">🎤 Presentasi</button>
       </div>
     </div>
@@ -1008,7 +1023,9 @@ async function loadRincian(){
 function renderRincian(d){
   const n=d.now,lbl=BLN[d.bln-1]+' '+d.thn;
   if(!n.rec){el('rin-body').innerHTML=`<div class="empty"><p>Belum ada data setoran ${lbl}${d.tf?' — '+esc(d.tf):''}</p></div>`;return;}
-  let h=`<div class="g4" style="margin-bottom:16px">
+  let h=`<div class="rin-ph"><div style="font-size:18px;font-weight:700">AWW Fashion — Rincian Setoran ${lbl}</div>
+    <div style="font-size:12px;color:var(--tx2)">${esc(d.tf||'Semua Toko')} · Dicetak ${new Date().toLocaleString('id-ID',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div></div>
+  <div class="g4" style="margin-bottom:16px">
     <div class="mc"><div class="mcl">Omset ${lbl}</div><div class="mcv" style="font-size:14px;color:var(--blue)">${fmt(n.glob)}</div><div class="mcs">${chgBadge(pctChg(n.glob,d.prev.glob))} vs ${BLN[d.pb-1]}</div></div>
     <div class="mc"><div class="mcl">Pengeluaran Bulanan</div><div class="mcv" style="font-size:14px;color:var(--red)">-${fmt(d.totPen)}</div></div>
     <div class="mc"><div class="mcl">Omset Bersih</div><div class="mcv" style="font-size:14px;color:var(--grn)">${fmt(n.glob-d.totPen)}</div></div>
@@ -1019,6 +1036,18 @@ function renderRincian(d){
   h+=`<span class="sl">Rincian Toko × Metode Bayar</span><div class="tblw" style="margin-bottom:16px">${tblTokoMetode(d,'')}</div>`;
   h+=`<span class="sl">Pengeluaran Bulanan</span><div class="tblw">${tblPengeluaran(d,'')}</div>`;
   el('rin-body').innerHTML=h;
+}
+
+async function cetakRincian(){
+  const thn=+gv('f-tahun'),bln=+gv('f-bln-rin'),tf=gv('f-toko-bul');
+  if(!rinData||rinData.thn!==thn||rinData.bln!==bln||rinData.tf!==tf) await loadRincian();
+  if(!rinData)return;
+  if(!rinData.now.rec){alert('Belum ada data setoran untuk '+BLN[bln-1]+' '+thn);return;}
+  renderRincian(rinData); // perbarui jam cetak
+  document.body.classList.add('prin');
+  const done=()=>{document.body.classList.remove('prin');window.removeEventListener('afterprint',done);};
+  window.addEventListener('afterprint',done);
+  setTimeout(()=>window.print(),200);
 }
 
 // ----- Presentasi -----
