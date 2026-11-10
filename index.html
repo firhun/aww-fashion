@@ -112,6 +112,47 @@ tr:hover td{background:#FAFAF8}
 .spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
 .loading{text-align:center;padding:30px;color:var(--tx3);font-size:13px}
 @media print{.side,.no-print{display:none!important}.main{margin-left:0;padding:0}}
+
+/* PRESENTASI */
+.ovl{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1500;align-items:center;justify-content:center}
+.ovl-box{background:var(--surf);border-radius:var(--r);padding:24px;width:600px;max-width:95vw;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+#pres{position:fixed;inset:0;background:#0d2b4a;z-index:2000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:12px}
+.pslide{container-type:inline-size;width:min(94vw,calc((100vh - 90px)*16/9));aspect-ratio:16/9;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.pin{height:100%;display:flex;flex-direction:column;padding:3cqw 4cqw 2cqw;font-size:1.35cqw;color:var(--tx)}
+.sl-k{font-size:1.05cqw;font-weight:700;letter-spacing:.15cqw;text-transform:uppercase;color:var(--blue2);margin-bottom:.4cqw}
+.sl-t{font-size:2.6cqw;font-weight:700;letter-spacing:-.05cqw;margin-bottom:1.8cqw;line-height:1.15}
+.sl-b{flex:1;min-height:0;display:flex;flex-direction:column;gap:1.6cqw}
+.sl-f{display:flex;justify-content:space-between;font-size:.95cqw;color:var(--tx3);border-top:1px solid var(--bdr);padding-top:.8cqw;margin-top:1.2cqw}
+.c2{display:grid;grid-template-columns:1fr 1.15fr;gap:2.5cqw;flex:1;min-height:0}
+.chbox{position:relative;min-height:0;height:100%}
+.bign{display:grid;grid-template-columns:1fr 1fr;gap:1.6cqw;flex:1}
+.bn{background:var(--surf2);border:1px solid var(--bdr);border-radius:1cqw;padding:1.6cqw 2cqw;display:flex;flex-direction:column;justify-content:center}
+.bn-l{font-size:1.05cqw;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.08cqw;margin-bottom:.5cqw}
+.bn-v{font-size:3.1cqw;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:-.1cqw}
+.bn-s{font-size:1.2cqw;color:var(--tx2);margin-top:.4cqw}
+.ptbl{width:100%;border-collapse:collapse;font-size:1.15cqw}
+.ptbl th{font-size:1cqw;padding:.6cqw .8cqw;background:var(--surf2);color:var(--tx2);border-bottom:1px solid var(--bdr)}
+.ptbl td{padding:.55cqw .8cqw;border-bottom:1px solid var(--bdr)}
+.ptbl.sm{font-size:1cqw}.ptbl.sm td,.ptbl.sm th{padding:.45cqw .6cqw}
+.ptbl tr:hover td{background:none}
+.insight{background:var(--blue-l);border-left:.4cqw solid var(--blue2);border-radius:.6cqw;padding:1cqw 1.4cqw;font-size:1.3cqw;line-height:1.5}
+.note{background:var(--surf2);border:1px solid var(--bdr);border-radius:1cqw;padding:1.4cqw 1.8cqw;white-space:pre-wrap;line-height:1.5;font-size:1.3cqw}
+.note-h{font-size:1.05cqw;font-weight:700;text-transform:uppercase;color:var(--tx3);letter-spacing:.08cqw;margin-bottom:.5cqw}
+.cov{height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 7cqw;background:linear-gradient(135deg,#0d2b4a 0%,#1F4E79 60%,#2E75B6 100%);color:#fff}
+.cov-k{font-size:1.3cqw;font-weight:700;letter-spacing:.3cqw;opacity:.75;margin-bottom:1cqw}
+.cov-t{font-size:6cqw;font-weight:700;letter-spacing:-.2cqw;line-height:1}
+.cov-s{font-size:2cqw;opacity:.85;margin-top:1cqw}
+.cov-p{font-size:1.5cqw;margin-top:5cqw;opacity:.9;line-height:1.6}
+.pres-bar{display:flex;gap:8px;align-items:center;color:#fff;font-size:13px}
+.pres-bar .btn{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.25)}
+.pres-bar .btn:hover{background:rgba(255,255,255,.2)}
+.pres-bar .btn:disabled{opacity:.35;cursor:default}
+#pres-print{display:none}
+@media print{
+  body.pp .app,body.pp #login-page,body.pp #pres,body.pp #pres-prep,body.pp #modal-overlay{display:none!important}
+  body.pp #pres-print{display:block!important}
+  body.pp .pslide{width:100%;box-shadow:none;border:1px solid #ccc;border-radius:0;break-after:page;page-break-after:always;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 </style>
 </head>
 <body>
@@ -280,6 +321,20 @@ tr:hover td{background:#FAFAF8}
     <div id="tbl-pen"><div style="font-size:12px;color:var(--tx3)">Belum ada pengeluaran bulanan.</div></div>
   </div>
   <div class="card"><div id="bul-tbl"><div class="empty"><p>Klik Tampilkan untuk melihat rekap bulanan</p></div></div></div>
+  <div class="card">
+    <div class="no-print" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+      <div>
+        <span class="sl" style="margin-bottom:3px">Rincian &amp; Presentasi Per Bulan</span>
+        <div style="font-size:12px;color:var(--tx2)">Pecahan per metode bayar &amp; per toko, dibanding bulan lalu. Tahun &amp; toko ikut filter di atas.</div>
+      </div>
+      <div class="fl">
+        <div><label class="lbl">Bulan</label><select id="f-bln-rin" style="width:130px"></select></div>
+        <button class="btn bp" onclick="loadRincian()">Tampilkan Rincian</button>
+        <button class="btn bg" onclick="mulaiPresentasi()">🎤 Presentasi</button>
+      </div>
+    </div>
+    <div id="rin-body"><div class="empty"><p>Pilih bulan, lalu klik Tampilkan Rincian</p></div></div>
+  </div>
 </div>
 
 <!-- PER TOKO -->
@@ -416,6 +471,39 @@ tr:hover td{background:#FAFAF8}
   </div>
 </div>
 
+<!-- PERSIAPAN PRESENTASI -->
+<div id="pres-prep" class="ovl" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div class="ovl-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="font-size:16px;font-weight:700">🎤 Persiapan Presentasi — <span id="pp-periode"></span></div>
+      <button class="btn bsm" onclick="el('pres-prep').style.display='none'">✕</button>
+    </div>
+    <p style="font-size:12px;color:var(--tx2);margin-bottom:14px">Isi dulu sebelum presentasi. Tulis dengan kata-kata sendiri apa yang terjadi bulan ini — isian ini tampil di slide <b>Catatan Penyaji</b>. Tanda * wajib diisi.</p>
+    <div style="margin-bottom:10px"><label class="lbl">Nama Penyaji *</label><input type="text" id="pp-nama" placeholder="Nama yang presentasi"></div>
+    <div style="margin-bottom:10px"><label class="lbl">Temuan / Hal Penting Bulan Ini *</label><textarea id="pp-temuan" rows="4" placeholder="Contoh: Omset Talun naik karena ada promo seragam. QRIS makin banyak dipakai di Srengat. Kauman turun di minggu ke-3..."></textarea></div>
+    <div style="margin-bottom:10px"><label class="lbl">Kendala / Masalah</label><textarea id="pp-kendala" rows="3" placeholder="Contoh: Ada setoran yang telat diinput, mesin EDC BRI sempat rusak..."></textarea></div>
+    <div style="margin-bottom:14px"><label class="lbl">Usulan / Rencana Bulan Depan</label><textarea id="pp-rencana" rows="3" placeholder="Contoh: Dorong pembayaran QRIS, cek stok toko yang omsetnya turun..."></textarea></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn bp" onclick="mulaiSlide()">▶ Mulai Presentasi</button>
+      <button class="btn" onclick="el('pres-prep').style.display='none'">Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- LAYAR PRESENTASI -->
+<div id="pres">
+  <div class="pslide" id="pres-slide"></div>
+  <div class="pres-bar">
+    <button class="btn" id="pres-prev" onclick="showSlide(presIdx-1)">◀ Sebelumnya</button>
+    <span id="pres-count" style="min-width:60px;text-align:center;font-family:'JetBrains Mono',monospace"></span>
+    <button class="btn" id="pres-next" onclick="showSlide(presIdx+1)">Berikutnya ▶</button>
+    <span style="width:16px"></span>
+    <button class="btn" onclick="cetakPresentasi()">🖨 Cetak / PDF</button>
+    <button class="btn" onclick="tutupPresentasi()">✕ Tutup</button>
+  </div>
+</div>
+<div id="pres-print"></div>
+
 <script>
 // ===== CONFIG =====
 const SB_URL = 'https://daitsyyqplxlhdwjysry.supabase.co';
@@ -548,6 +636,9 @@ function buildMonths(){
   });
   const fp=el('f-bulan-pt');
   if(fp) fp.innerHTML='<option value="">Semua Bulan</option>'+BLN.map((b,i)=>`<option value="${i+1}">${b}</option>`).join('');
+  // Rincian: default bulan lalu (yang biasanya dipresentasikan)
+  const fr=el('f-bln-rin');
+  if(fr){const lalu=now===1?12:now-1;fr.innerHTML=BLN.map((b,i)=>`<option value="${i+1}" ${i+1===lalu?'selected':''}>${b}</option>`).join('');}
 }
 
 // ===== NAVIGATE =====
@@ -821,6 +912,282 @@ async function hapusPen(id){
   catch(e){alert('Gagal: '+e.message);}
 }
 
+// ===== RINCIAN & PRESENTASI BULANAN =====
+const METODE=[['tunai','Tunai'],['qris','QRIS'],['bca','EDC BCA'],['bni','EDC BNI'],['bri','EDC BRI'],['mandiri','EDC Mandiri']];
+let rinData=null,presSlides=[],presIdx=0,presChart=null;
+const pad=n=>String(n).padStart(2,'0');
+const lastDay=(y,m)=>new Date(y,m,0).getDate();
+const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pctChg=(a,b)=>b?(a-b)/b*100:null;
+// Ambil SEMUA baris (server Supabase membatasi 1000 baris per permintaan) — hanya membaca
+async function dbAll(path){
+  const out=[],step=1000;
+  for(let from=0;;from+=step){
+    const part=await db(path,{headers:{'Range-Unit':'items','Range':`${from}-${from+step-1}`}})||[];
+    out.push(...part);
+    if(part.length<step)break;
+  }
+  return out;
+}
+function chgBadge(p){
+  if(p===null)return '<span style="color:var(--tx3)">–</span>';
+  return `<span style="color:${p>=0?'var(--grn)':'var(--red)'};font-weight:600">${p>=0?'▲':'▼'} ${Math.abs(p).toFixed(1)}%</span>`;
+}
+function barHtml(pct,clr,w){
+  return `<div style="display:flex;align-items:center;gap:6px"><div class="pbg" style="width:${w||80}px;height:8px"><div class="pfil" style="width:${Math.min(Math.max(pct,0),100).toFixed(1)}%;background:${clr}"></div></div><span>${pct.toFixed(1)}%</span></div>`;
+}
+function rinSum(rows){
+  const s={laci:0,keluar:0,qris:0,bca:0,bni:0,bri:0,mandiri:0,debit:0,glob:0,rec:rows.length,hari:new Set()};
+  rows.forEach(r=>{['laci','keluar','qris','bca','bni','bri','mandiri','debit','glob'].forEach(k=>s[k]+=(+r[k]||0));s.hari.add(r.tgl);});
+  s.tunai=s.laci+s.keluar;s.nHari=s.hari.size;
+  return s;
+}
+async function getDataBulan(thn,bln,tf){
+  const pb=bln===1?12:bln-1,pt=bln===1?thn-1:thn;
+  const rng=(y,m)=>`tgl=gte.${y}-${pad(m)}-01&tgl=lte.${y}-${pad(m)}-${pad(lastDay(y,m))}`;
+  const ft=tf?'&toko=eq.'+encodeURIComponent(tf):'';
+  const [rows,prev,pens]=await Promise.all([
+    dbAll(`setoran?select=*&${rng(thn,bln)}${ft}&order=tgl.asc,id.asc`),
+    dbAll(`setoran?select=*&${rng(pt,pb)}${ft}&order=tgl.asc,id.asc`),
+    db(`pengeluaran_bulanan?select=*&thn=eq.${thn}&bln=eq.${bln}${ft}`)
+  ]);
+  const R=rows||[],P=prev||[],E=pens||[];
+  const names=[...toko];R.concat(P).forEach(r=>{if(r.toko&&!names.includes(r.toko))names.push(r.toko);});
+  const perToko=names.map(t=>({toko:t,now:rinSum(R.filter(r=>r.toko===t)),prev:rinSum(P.filter(r=>r.toko===t))}))
+    .filter(x=>x.now.rec||x.prev.rec).sort((a,b)=>b.now.glob-a.now.glob);
+  const byDay={};R.forEach(r=>{byDay[r.tgl]=(byDay[r.tgl]||0)+(+r.glob||0);});
+  const totPen=E.reduce((s,p)=>s+(+p.jumlah||0),0);
+  return {thn,bln,pb,pt,tf,rows:R,pens:E,now:rinSum(R),prev:rinSum(P),perToko,byDay,totPen};
+}
+
+// Tabel-tabel yang dipakai di halaman rincian & slide
+function tblMetode(d,cls){
+  const n=d.now,p=d.prev;
+  let h=`<table class="${cls}"><thead><tr><th>Metode</th><th class="num">${BLN[d.bln-1]}</th><th>Porsi</th><th class="num">${BLN[d.pb-1]}</th><th class="num">Perubahan</th></tr></thead><tbody>`;
+  METODE.forEach(([k,nm],i)=>{
+    const pc=n.glob?n[k]/n.glob*100:0;
+    h+=`<tr><td style="font-weight:600">${nm}</td><td class="num">${fnum(n[k])}</td><td>${barHtml(pc,CLR[i])}</td><td class="num" style="color:var(--tx3)">${fnum(p[k])}</td><td class="num">${chgBadge(pctChg(n[k],p[k]))}</td></tr>`;
+  });
+  h+=`<tr class="gr"><td>TOTAL</td><td class="num" style="color:var(--blue)">${fnum(n.glob)}</td><td>100%</td><td class="num">${fnum(p.glob)}</td><td class="num">${chgBadge(pctChg(n.glob,p.glob))}</td></tr></tbody></table>`;
+  return h;
+}
+function tblToko(d,cls){
+  const tot=d.now.glob;
+  let h=`<table class="${cls}"><thead><tr><th>#</th><th>Toko</th><th class="num">Hari</th><th class="num">Omset ${BLN[d.bln-1]}</th><th class="num">${BLN[d.pb-1]}</th><th class="num">Perubahan</th><th>Porsi</th></tr></thead><tbody>`;
+  d.perToko.forEach((x,i)=>{
+    const pc=tot?x.now.glob/tot*100:0;
+    h+=`<tr><td style="font-weight:700;color:${CLR[i%CLR.length]}">${i+1}</td><td style="font-weight:600">${esc(x.toko)}</td><td class="num">${x.now.nHari}</td><td class="num" style="font-weight:700;color:var(--blue)">${fnum(x.now.glob)}</td><td class="num" style="color:var(--tx3)">${fnum(x.prev.glob)}</td><td class="num">${chgBadge(pctChg(x.now.glob,x.prev.glob))}</td><td>${barHtml(pc,CLR[i%CLR.length],60)}</td></tr>`;
+  });
+  return h+'</tbody></table>';
+}
+function tblTokoMetode(d,cls){
+  let h=`<table class="${cls}"><thead><tr><th>Toko</th>${METODE.map(m=>`<th class="num">${m[1]}</th>`).join('')}<th class="num">Pengeluaran Kasir</th><th class="num">Total Omset</th></tr></thead><tbody>`;
+  d.perToko.forEach(x=>{
+    h+=`<tr><td style="font-weight:600">${esc(x.toko)}</td>${METODE.map(([k])=>`<td class="num">${x.now[k]?fnum(x.now[k]):'-'}</td>`).join('')}<td class="num" style="color:var(--tx3)">${x.now.keluar?fnum(x.now.keluar):'-'}</td><td class="num" style="font-weight:700;color:var(--blue)">${fnum(x.now.glob)}</td></tr>`;
+  });
+  const n=d.now;
+  h+=`<tr class="gr"><td>TOTAL</td>${METODE.map(([k])=>`<td class="num">${fnum(n[k])}</td>`).join('')}<td class="num">${fnum(n.keluar)}</td><td class="num" style="color:var(--blue)">${fnum(n.glob)}</td></tr></tbody></table>`;
+  return h;
+}
+function tblPengeluaran(d,cls){
+  let h='';
+  if(d.pens.length){
+    h+=`<table class="${cls}"><thead><tr><th>Toko</th><th>Keterangan</th><th class="num">Jumlah</th></tr></thead><tbody>`;
+    d.pens.forEach(p=>{h+=`<tr><td>${esc(p.toko||'Semua')}</td><td>${esc(p.ket||'-')}</td><td class="num" style="color:var(--red);font-weight:600">- ${fnum(p.jumlah)}</td></tr>`;});
+    h+=`<tr class="gr"><td colspan="2">TOTAL PENGELUARAN BULANAN</td><td class="num" style="color:var(--red)">- ${fnum(d.totPen)}</td></tr></tbody></table>`;
+  } else h+='<div style="color:var(--tx3)">Tidak ada pengeluaran bulanan yang dicatat.</div>';
+  return h;
+}
+
+async function loadRincian(){
+  const thn=+gv('f-tahun'),bln=+gv('f-bln-rin'),tf=gv('f-toko-bul');
+  el('rin-body').innerHTML='<div class="loading">Memuat rincian...</div>';
+  try{rinData=await getDataBulan(thn,bln,tf);renderRincian(rinData);}
+  catch(e){rinData=null;el('rin-body').innerHTML='<div class="empty"><p>Gagal memuat: '+esc(e.message)+'</p></div>';}
+}
+function renderRincian(d){
+  const n=d.now,lbl=BLN[d.bln-1]+' '+d.thn;
+  if(!n.rec){el('rin-body').innerHTML=`<div class="empty"><p>Belum ada data setoran ${lbl}${d.tf?' — '+esc(d.tf):''}</p></div>`;return;}
+  let h=`<div class="g4" style="margin-bottom:16px">
+    <div class="mc"><div class="mcl">Omset ${lbl}</div><div class="mcv" style="font-size:14px;color:var(--blue)">${fmt(n.glob)}</div><div class="mcs">${chgBadge(pctChg(n.glob,d.prev.glob))} vs ${BLN[d.pb-1]}</div></div>
+    <div class="mc"><div class="mcl">Pengeluaran Bulanan</div><div class="mcv" style="font-size:14px;color:var(--red)">-${fmt(d.totPen)}</div></div>
+    <div class="mc"><div class="mcl">Omset Bersih</div><div class="mcv" style="font-size:14px;color:var(--grn)">${fmt(n.glob-d.totPen)}</div></div>
+    <div class="mc"><div class="mcl">Rata-rata / Hari</div><div class="mcv" style="font-size:14px">${fmt(n.glob/(n.nHari||1))}</div><div class="mcs">${n.nHari} hari · ${n.rec} setoran</div></div>
+  </div>`;
+  h+=`<span class="sl">Per Metode Pembayaran</span><div class="tblw" style="margin-bottom:16px">${tblMetode(d,'')}</div>`;
+  h+=`<span class="sl">Per Toko (dibanding ${BLN[d.pb-1]})</span><div class="tblw" style="margin-bottom:16px">${tblToko(d,'')}</div>`;
+  h+=`<span class="sl">Rincian Toko × Metode Bayar</span><div class="tblw" style="margin-bottom:16px">${tblTokoMetode(d,'')}</div>`;
+  h+=`<span class="sl">Pengeluaran Bulanan</span><div class="tblw">${tblPengeluaran(d,'')}</div>`;
+  el('rin-body').innerHTML=h;
+}
+
+// ----- Presentasi -----
+const presKeyOf=d=>`aww_pres_${d.thn}_${d.bln}_${d.tf||'semua'}`;
+async function mulaiPresentasi(){
+  const thn=+gv('f-tahun'),bln=+gv('f-bln-rin'),tf=gv('f-toko-bul');
+  if(!rinData||rinData.thn!==thn||rinData.bln!==bln||rinData.tf!==tf) await loadRincian();
+  if(!rinData)return;
+  if(!rinData.now.rec){alert('Belum ada data setoran untuk '+BLN[bln-1]+' '+thn);return;}
+  let sv={};try{sv=JSON.parse(localStorage.getItem(presKeyOf(rinData))||'{}');}catch(e){}
+  el('pp-nama').value=sv.nama||'';el('pp-temuan').value=sv.temuan||'';
+  el('pp-kendala').value=sv.kendala||'';el('pp-rencana').value=sv.rencana||'';
+  el('pp-periode').textContent=BLN[bln-1]+' '+thn+(tf?' · '+tf:'');
+  el('pres-prep').style.display='flex';
+}
+function mulaiSlide(){
+  const notes={nama:gv('pp-nama').trim(),temuan:gv('pp-temuan').trim(),kendala:gv('pp-kendala').trim(),rencana:gv('pp-rencana').trim()};
+  if(!notes.nama){alert('Nama penyaji wajib diisi');return;}
+  if(notes.temuan.length<20){alert('Temuan / hal penting wajib diisi (minimal 1–2 kalimat)');return;}
+  try{localStorage.setItem(presKeyOf(rinData),JSON.stringify(notes));}catch(e){}
+  presSlides=buildSlides(rinData,notes);
+  el('pres-prep').style.display='none';
+  el('pres').style.display='flex';
+  document.addEventListener('keydown',presKeys);
+  el('pres').requestFullscreen?.().catch(()=>{});
+  showSlide(0);
+}
+function presKeys(e){
+  if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();showSlide(presIdx+1);}
+  else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();showSlide(presIdx-1);}
+  else if(e.key==='Escape'&&!document.fullscreenElement){tutupPresentasi();}
+}
+function tutupPresentasi(){
+  if(presChart){presChart.destroy();presChart=null;}
+  el('pres').style.display='none';
+  document.removeEventListener('keydown',presKeys);
+  if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+}
+function slideWrap(s,i,total,foot){
+  if(s.cover)return s.html;
+  return `<div class="pin"><div class="sl-k">${s.kicker}</div><div class="sl-t">${s.title}</div><div class="sl-b">${s.html}</div><div class="sl-f"><span>${foot}</span><span>${i+1} / ${total}</span></div></div>`;
+}
+function showSlide(i){
+  if(!presSlides.length)return;
+  presIdx=Math.max(0,Math.min(i,presSlides.length-1));
+  if(presChart){presChart.destroy();presChart=null;}
+  const s=presSlides[presIdx];
+  el('pres-slide').innerHTML=slideWrap(s,presIdx,presSlides.length,presSlides.foot).replace('__CID__','pc-live');
+  if(s.chart)presChart=new Chart(el('pc-live'),s.chart());
+  el('pres-count').textContent=(presIdx+1)+' / '+presSlides.length;
+  el('pres-prev').disabled=presIdx===0;
+  el('pres-next').disabled=presIdx===presSlides.length-1;
+}
+function chartImg(cfg){
+  const box=document.createElement('div');box.style.cssText='position:fixed;left:-10000px;top:0;width:900px;height:520px';
+  const cv=document.createElement('canvas');cv.width=900;cv.height=520;box.appendChild(cv);document.body.appendChild(box);
+  cfg.options={...cfg.options,animation:false,responsive:false,devicePixelRatio:2};
+  const c=new Chart(cv,cfg);const url=c.toBase64Image();c.destroy();box.remove();return url;
+}
+function cetakPresentasi(){
+  const tot=presSlides.length;
+  el('pres-print').innerHTML=presSlides.map((s,i)=>{
+    let h=slideWrap(s,i,tot,presSlides.foot);
+    if(s.chart)h=h.replace('<canvas id="__CID__"></canvas>',`<img src="${chartImg(s.chart())}" style="width:100%;height:100%;object-fit:contain">`);
+    return `<div class="pslide">${h}</div>`;
+  }).join('');
+  document.body.classList.add('pp');
+  const done=()=>{document.body.classList.remove('pp');el('pres-print').innerHTML='';window.removeEventListener('afterprint',done);};
+  window.addEventListener('afterprint',done);
+  setTimeout(()=>window.print(),300);
+}
+
+function buildSlides(d,notes){
+  const n=d.now,p=d.prev,B=BLN[d.bln-1],BP=BLN[d.pb-1],lbl=B+' '+d.thn,lingkup=d.tf||'Semua Toko';
+  const rp=v=>'Rp '+Math.round(v/1e6).toLocaleString('id-ID')+'jt';
+  const tick={callback:v=>v>=1e6?rp(v):'Rp '+Math.round(v).toLocaleString('id-ID')};
+  const tip={callbacks:{label:c=>' '+fmt(c.raw)}};
+  const chg=pctChg(n.glob,p.glob);
+  const S=[];
+
+  // 1. Cover
+  S.push({cover:true,html:`<div class="cov"><div class="cov-k">AWW FASHION · LAPORAN SETORAN BULANAN</div><div class="cov-t">${lbl}</div><div class="cov-s">${esc(lingkup)}</div><div class="cov-p">Disajikan oleh <b>${esc(notes.nama)}</b><br>${new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div></div>`});
+
+  // 2. Ringkasan
+  const naik=chg===null?`Belum ada data ${BP} untuk dibandingkan.`:`Omset ${chg>=0?'<b>naik</b>':'<b>turun</b>'} <b>${Math.abs(chg).toFixed(1)}%</b> dibanding ${BP} (${fmt(p.glob)} → ${fmt(n.glob)}).`;
+  S.push({kicker:'Ringkasan',title:`Gambaran Besar ${lbl}`,html:`
+    <div class="bign">
+      <div class="bn"><div class="bn-l">Total Omset</div><div class="bn-v" style="color:var(--blue)">${fmt(n.glob)}</div><div class="bn-s">${chgBadge(chg)} vs ${BP}</div></div>
+      <div class="bn"><div class="bn-l">Omset Bersih (setelah pengeluaran bulanan)</div><div class="bn-v" style="color:var(--grn)">${fmt(n.glob-d.totPen)}</div><div class="bn-s">Pengeluaran bulanan: ${fmt(d.totPen)}</div></div>
+      <div class="bn"><div class="bn-l">Rata-rata per Hari</div><div class="bn-v">${fmt(n.glob/(n.nHari||1))}</div><div class="bn-s">${n.nHari} hari ada setoran</div></div>
+      <div class="bn"><div class="bn-l">Jumlah Setoran Masuk</div><div class="bn-v">${n.rec}</div><div class="bn-s">${d.perToko.filter(x=>x.now.rec).length} toko aktif</div></div>
+    </div>
+    <div class="insight">${naik}</div>`});
+
+  // 3. Metode bayar
+  const nonTunai=n.glob-n.tunai,pNT=n.glob?nonTunai/n.glob*100:0;
+  S.push({kicker:'Metode Pembayaran',title:'Uang Masuk Lewat Apa Saja?',html:`
+    <div class="c2"><div class="chbox"><canvas id="__CID__"></canvas></div>
+    <div style="display:flex;flex-direction:column;gap:1.4cqw;min-height:0">${tblMetode(d,'ptbl sm')}
+    <div class="insight">Pembayaran non-tunai (QRIS + EDC) = <b>${pNT.toFixed(1)}%</b> dari omset (${fmt(nonTunai)}).</div></div></div>`,
+    chart:()=>({type:'doughnut',data:{labels:METODE.map(m=>m[1]),datasets:[{data:METODE.map(([k])=>Math.round(n[k])),backgroundColor:METODE.map((_,i)=>CLR[i]),borderColor:'#fff',borderWidth:2}]},
+      options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:13}}},tooltip:tip}}})});
+
+  // 4. Per toko
+  const top=d.perToko[0],naikT=d.perToko.filter(x=>x.prev.glob).map(x=>({t:x.toko,c:pctChg(x.now.glob,x.prev.glob)})).sort((a,b)=>b.c-a.c);
+  let ins=top?`Toko tertinggi: <b>${esc(top.toko)}</b> (${fmt(top.now.glob)}).`:'';
+  if(naikT.length>1)ins+=` Naik paling besar: <b>${esc(naikT[0].t)}</b> (${naikT[0].c>=0?'+':''}${naikT[0].c.toFixed(1)}%). Paling turun: <b>${esc(naikT[naikT.length-1].t)}</b> (${naikT[naikT.length-1].c.toFixed(1)}%).`;
+  S.push({kicker:'Per Toko',title:`Peringkat Toko & Perbandingan dengan ${BP}`,html:`
+    <div class="c2"><div class="chbox"><canvas id="__CID__"></canvas></div>
+    <div style="display:flex;flex-direction:column;gap:1.4cqw;min-height:0">${tblToko(d,'ptbl sm')}<div class="insight">${ins}</div></div></div>`,
+    chart:()=>({type:'bar',data:{labels:d.perToko.map(x=>x.toko),datasets:[
+      {label:BP,data:d.perToko.map(x=>Math.round(x.prev.glob)),backgroundColor:'#CBC5BA',borderRadius:4},
+      {label:B,data:d.perToko.map(x=>Math.round(x.now.glob)),backgroundColor:'#2E75B6',borderRadius:4}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:12}},tooltip:tip},scales:{x:{ticks:tick,grid:{color:'rgba(0,0,0,.05)'}},y:{grid:{display:false}}}}})});
+
+  // 5. Rincian toko x metode
+  S.push({kicker:'Rincian',title:'Rincian Setiap Toko per Metode Bayar',html:`<div style="flex:1;min-height:0;overflow:hidden">${tblTokoMetode(d,'ptbl')}</div>
+    <div class="insight">“Pengeluaran Kasir” = uang yang dipakai kasir dari laci (sudah termasuk di kolom Tunai).</div>`});
+
+  // 6. Tren harian
+  const days=Array.from({length:lastDay(d.thn,d.bln)},(_,i)=>`${d.thn}-${pad(d.bln)}-${pad(i+1)}`);
+  const ada=days.filter(t=>d.byDay[t]);
+  const best=ada.reduce((a,t)=>!a||d.byDay[t]>d.byDay[a]?t:a,null),worst=ada.reduce((a,t)=>!a||d.byDay[t]<d.byDay[a]?t:a,null);
+  const tglL=t=>new Date(t+'T00:00').toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'short'});
+  const hariIni=new Date().toLocaleDateString('sv-SE');
+  const kosong=days.filter(t=>!d.byDay[t]&&t<=hariIni).length;
+  S.push({kicker:'Tren Harian',title:`Naik-Turun Omset Setiap Hari`,html:`
+    <div class="chbox" style="flex:1"><canvas id="__CID__"></canvas></div>
+    <div class="insight">Tertinggi: <b>${best?tglL(best):'-'}</b> (${fmt(d.byDay[best])}) · Terendah: <b>${worst?tglL(worst):'-'}</b> (${fmt(d.byDay[worst])})${kosong?` · <span style="color:var(--red)">${kosong} hari tanpa setoran</span>`:''}</div>`,
+    chart:()=>({type:'line',data:{labels:days.map(t=>+t.slice(8)),datasets:[{data:days.map(t=>Math.round(d.byDay[t]||0)),borderColor:'#2E75B6',backgroundColor:'rgba(46,117,182,.12)',fill:true,tension:.3,pointRadius:3}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:tip},scales:{y:{ticks:tick,grid:{color:'rgba(0,0,0,.05)'}},x:{grid:{display:false},title:{display:true,text:'Tanggal'}}}}})});
+
+  // 7. Target (kalau ada)
+  const tokoTarget=d.tf?[d.tf]:toko;
+  const adaTarget=tokoTarget.some(t=>targets[t]);
+  if(adaTarget){
+    let h='<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2cqw 3cqw">';
+    tokoTarget.map(t=>d.perToko.find(x=>x.toko===t)||{toko:t,now:{glob:0}}).forEach(x=>{
+      const tg=targets[x.toko];if(!tg)return;
+      const pc=x.now.glob/tg*100,bg=pc>=100?'#639922':pc>=70?'#EF9F27':'#E24B4A';
+      h+=`<div><div style="display:flex;justify-content:space-between;margin-bottom:.4cqw"><b>${esc(x.toko)}</b><span style="font-family:'JetBrains Mono',monospace;font-size:1.1cqw">${fmt(x.now.glob)} / ${fmt(tg)}</span></div>
+        <div class="pbg" style="height:1cqw"><div class="pfil" style="width:${Math.min(pc,100).toFixed(1)}%;background:${bg}"></div></div>
+        <div style="font-size:1.1cqw;font-weight:700;color:${bg};margin-top:.3cqw">${pc.toFixed(1)}%${pc>=100?' — TERCAPAI ✓':''}</div></div>`;
+    });
+    S.push({kicker:'Target',title:'Pencapaian Target Omset',html:h+'</div>'});
+  }
+
+  // 8. Pengeluaran
+  S.push({kicker:'Pengeluaran',title:'Pengeluaran Bulan Ini',html:`
+    <div class="c2" style="grid-template-columns:1.3fr 1fr"><div style="min-height:0;overflow:hidden"><div class="note-h">Pengeluaran bulanan (dicatat admin)</div>${tblPengeluaran(d,'ptbl sm')}</div>
+    <div style="min-height:0;overflow:hidden"><div class="note-h">Pengeluaran kasir harian per toko</div>
+      <table class="ptbl sm"><tbody>${d.perToko.map(x=>`<tr><td>${esc(x.toko)}</td><td class="num">${x.now.keluar?fnum(x.now.keluar):'-'}</td></tr>`).join('')}
+      <tr class="gr"><td>TOTAL</td><td class="num">${fnum(n.keluar)}</td></tr></tbody></table></div></div>`});
+
+  // 9. Catatan penyaji
+  S.push({kicker:'Catatan Penyaji',title:`Analisis dari ${esc(notes.nama)}`,html:`
+    <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:1.4cqw;flex:1;min-height:0">
+      <div class="note" style="grid-column:1/3"><div class="note-h">Temuan / Hal Penting</div>${esc(notes.temuan)}</div>
+      <div class="note"><div class="note-h">Kendala / Masalah</div>${esc(notes.kendala)||'<span style="color:var(--tx3)">—</span>'}</div>
+      <div class="note"><div class="note-h">Usulan / Rencana Bulan Depan</div>${esc(notes.rencana)||'<span style="color:var(--tx3)">—</span>'}</div>
+    </div>`});
+
+  // 10. Penutup
+  S.push({cover:true,html:`<div class="cov" style="align-items:center;text-align:center"><div class="cov-k">${lbl.toUpperCase()} · ${esc(lingkup).toUpperCase()}</div><div class="cov-t">Terima Kasih</div><div class="cov-s">Sesi tanya jawab</div><div class="cov-p">${esc(notes.nama)}</div></div>`});
+
+  S.foot=`AWW Fashion · Laporan Setoran ${lbl} · ${esc(lingkup)} · Penyaji: ${esc(notes.nama)}`;
+  return S;
+}
+
 // ===== PER TOKO =====
 async function loadPerToko(){
   const thn=+gv('f-tahun-pt'),bln=gv('f-bulan-pt');
@@ -971,9 +1338,16 @@ function exportExcel(jenis){
   } else {
     if(!tmpBulanan.length){alert('Tampilkan data dulu');return;}
     const byB={};
-    tmpBulanan.forEach(r=>{const bi=+r.tgl.slice(5,7)-1;if(!byB[bi])byB[bi]={hari:new Set(),rec:0,laci:0,debit:0,total:0};byB[bi].hari.add(r.tgl);byB[bi].rec++;byB[bi].laci+=(r.laci||0);byB[bi].debit+=(r.debit||0);byB[bi].total+=(r.glob||0);});
-    const ws=XLSX.utils.json_to_sheet(Object.keys(byB).sort((a,b)=>+a-+b).map(bi=>({Bulan:BLN[+bi],'Hari':byB[bi].hari.size,'Record':byB[bi].rec,'Total Laci':byB[bi].laci,'Total Debit':byB[bi].debit,'Total Global Kasir':byB[bi].total,'Rata-rata/Hari':Math.round(byB[bi].total/byB[bi].hari.size)})));
+    tmpBulanan.forEach(r=>{const bi=+r.tgl.slice(5,7)-1;(byB[bi]=byB[bi]||[]).push(r);});
+    const ws=XLSX.utils.json_to_sheet(Object.keys(byB).sort((a,b)=>+a-+b).map(bi=>{const s=rinSum(byB[bi]);return {Bulan:BLN[+bi],'Hari':s.nHari,'Record':s.rec,'Tunai':s.tunai,'QRIS':s.qris,'EDC BCA':s.bca,'EDC BNI':s.bni,'EDC BRI':s.bri,'EDC Mandiri':s.mandiri,'Pengeluaran Kasir':s.keluar,'Total Laci':s.laci,'Total Debit':s.debit,'Total Global Kasir':s.glob,'Rata-rata/Hari':Math.round(s.glob/(s.nHari||1))};}));
     const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Rekap Bulanan');
+    // Sheet rincian per toko per bulan
+    const rinc=[];
+    Object.keys(byB).sort((a,b)=>+a-+b).forEach(bi=>{
+      const names=[...new Set(byB[bi].map(r=>r.toko))];
+      names.forEach(t=>{const s=rinSum(byB[bi].filter(r=>r.toko===t));rinc.push({Bulan:BLN[+bi],Toko:t,'Hari':s.nHari,'Tunai':s.tunai,'QRIS':s.qris,'EDC BCA':s.bca,'EDC BNI':s.bni,'EDC BRI':s.bri,'EDC Mandiri':s.mandiri,'Pengeluaran Kasir':s.keluar,'Total Omset':s.glob});});
+    });
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rinc),'Rincian Per Toko');
     XLSX.writeFile(wb,`Rekap_Bulanan_AWW_${gv('f-tahun')}.xlsx`);
   }
 }
