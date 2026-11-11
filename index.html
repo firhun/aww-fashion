@@ -314,6 +314,7 @@ tr:hover td{background:#FAFAF8}
       <button class="btn bg" onclick="exportExcel('harian')">Export Excel</button>
       <button class="btn bg" onclick="exportCSV()">Export CSV</button>
       <button class="btn" onclick="window.print()">🖨 Print</button>
+      <button class="btn bp" onclick="pdfJalan(pdfHarian,this)">📄 PDF</button>
     </div>
   </div>
   <div id="rekap-mc" class="g4" style="margin-bottom:12px"></div>
@@ -330,6 +331,7 @@ tr:hover td{background:#FAFAF8}
       <button class="btn bp" onclick="loadBulanan()">Tampilkan</button>
       <button class="btn bg" onclick="exportExcel('bulanan')">Export Excel</button>
       <button class="btn" onclick="window.print()">🖨 Print</button>
+      <button class="btn bp" onclick="pdfJalan(pdfBulanan,this)">📄 PDF</button>
     </div>
   </div>
   <div id="bul-mc" class="g4" style="margin-bottom:12px"></div>
@@ -361,6 +363,7 @@ tr:hover td{background:#FAFAF8}
         <div><label class="lbl">Bulan</label><select id="f-bln-rin" style="width:130px"></select></div>
         <button class="btn bp" onclick="loadRincian()">Tampilkan Rincian</button>
         <button class="btn" onclick="cetakRincian()">🖨 Print Rincian</button>
+        <button class="btn bp" onclick="pdfJalan(pdfRincian,this)">📄 PDF</button>
         <button class="btn bg" onclick="mulaiPresentasi()">🎤 Presentasi</button>
       </div>
     </div>
@@ -376,6 +379,7 @@ tr:hover td{background:#FAFAF8}
       <div><label class="lbl">Tahun</label><select id="f-tahun-pt" style="width:90px"></select></div>
       <div><label class="lbl">Bulan</label><select id="f-bulan-pt" style="width:130px"><option value="">Semua Bulan</option></select></div>
       <button class="btn bp" onclick="loadPerToko()">Tampilkan</button>
+      <button class="btn bp" onclick="pdfJalan(pdfPerToko,this)">📄 PDF</button>
     </div>
   </div>
   <div id="pertoko-mc" class="g4" style="margin-bottom:12px"></div>
@@ -391,24 +395,26 @@ tr:hover td{background:#FAFAF8}
       <span class="sl" style="margin:0" id="tpu-judul">Ambil Uang Baru</span>
       <button class="btn bsm" id="tpu-batal-edit" style="display:none" onclick="tpuBaru()">✕ Batal Edit</button>
     </div>
-    <div class="fl" style="margin-bottom:16px">
-      <div><label class="lbl">Tanggal Ambil</label><input type="date" id="tpu-tgl" style="width:150px"></div>
-      <div><label class="lbl">Periode Dari</label><input type="date" id="tpu-dari" style="width:150px"></div>
-      <div><label class="lbl">Sampai</label><input type="date" id="tpu-sampai" style="width:150px"></div>
-      <button class="btn bp" onclick="tpuHitung()">Ambil Data Setoran</button>
+    <div class="fl" style="margin-bottom:6px">
+      <div><label class="lbl">Tanggal Ambil</label><input type="date" id="tpu-tgl" style="width:160px" onchange="tpuPilihTgl()"></div>
+      <div><label class="lbl">Uang Setoran Dari</label><input type="date" id="tpu-dari" style="width:150px" onchange="tpuHitung()"></div>
+      <div><label class="lbl">Sampai</label><input type="date" id="tpu-sampai" style="width:150px" onchange="tpuHitung()"></div>
     </div>
-    <span class="sl">1. Cocokkan Per Toko</span>
-    <div id="tpu-toko" style="margin-bottom:18px"><div class="empty"><p>Isi periode, lalu klik <b>Ambil Data Setoran</b></p></div></div>
-    <div class="g2" style="margin-bottom:16px">
+    <div style="font-size:11px;color:var(--tx3);margin-bottom:14px">Cukup pilih <b>Tanggal Ambil</b> — periode &amp; jumlah uang terisi otomatis. Kalau ada kurang/lebih, ubah angkanya di kolom "Uang Dihitung" (bisa juga nanti lewat ✏️ di Riwayat).</div>
+    <div id="tpu-toko" style="margin-bottom:16px"><div class="empty"><p>Pilih Tanggal Ambil</p></div></div>
+    <details id="tpu-extra" style="margin-bottom:14px">
+      <summary style="cursor:pointer;font-size:12px;font-weight:600;color:var(--blue);padding:6px 0">+ Setor Bank &amp; Bayar Supplier (opsional, bisa diisi nanti)</summary>
+    <div class="g2" style="margin:10px 0 6px">
       <div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="sl" style="margin:0">2. Setor ke Bank</span><button class="btn bsm" onclick="tpuTambah('bank')">+ Tambah</button></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="sl" style="margin:0">Setor ke Bank</span><button class="btn bsm" onclick="tpuTambah('bank')">+ Tambah</button></div>
         <div id="tpu-bank"></div>
       </div>
       <div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="sl" style="margin:0">3. Bayar Supplier</span><button class="btn bsm" onclick="tpuTambah('sup')">+ Tambah</button></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="sl" style="margin:0">Bayar Supplier</span><button class="btn bsm" onclick="tpuTambah('sup')">+ Tambah</button></div>
         <div id="tpu-sup"></div>
       </div>
     </div>
+    </details>
     <div id="tpu-sum" class="prev"></div>
     <div style="margin-bottom:12px"><label class="lbl">Catatan</label><input type="text" id="tpu-cat" placeholder="Contoh: Uang Kauman kurang 50rb, sudah ditanyakan ke kasir..."></div>
     <div style="display:flex;gap:8px">
@@ -1280,7 +1286,7 @@ function buildSlides(d,notes){
 
 // ===== TRANSFER PUSAT =====
 // Tabel Supabase baru: transfer_pusat (satu baris = satu kali ambil uang mingguan)
-let tpuRows=[],tpuBank=[],tpuSup=[],tpuEditId=null,tpuList=[],tpuSiap=false;
+let tpuSeq=0,tpuRows=[],tpuBank=[],tpuSup=[],tpuEditId=null,tpuList=[],tpuSiap=false;
 const tglLokal=d=>d.toLocaleDateString('sv-SE');
 const tambahHari=(t,n)=>{const d=new Date(t+'T00:00');d.setDate(d.getDate()+n);return tglLokal(d);};
 const tglIndo=t=>t?new Date(t+'T00:00').toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}):'-';
@@ -1299,31 +1305,42 @@ async function tpuInit(){
     tpuBaru();
   } else tpuLoadRiwayat();
 }
-function tpuBaru(){
-  tpuEditId=null;tpuRows=[];tpuBank=[];tpuSup=[];
-  const hariIni=tglLokal(new Date());
-  const terakhir=tpuList.slice().sort((a,b)=>a.sampai<b.sampai?1:-1)[0];
-  el('tpu-tgl').value=hariIni;
-  el('tpu-dari').value=terakhir?tambahHari(terakhir.sampai,1):tambahHari(hariIni,-6);
-  el('tpu-sampai').value=hariIni;
+function tpuBaru(kosong){
+  tpuEditId=null;tpuRows=[];tpuBank=[];tpuSup=[];tpuSeq++;
+  el('tpu-tgl').value=kosong?'':tglLokal(new Date());
   el('tpu-cat').value='';
   el('tpu-judul').textContent='Ambil Uang Baru';
   el('tpu-batal-edit').style.display='none';
-  el('tpu-toko').innerHTML='<div class="empty"><p>Isi periode, lalu klik <b>Ambil Data Setoran</b></p></div>';
-  tpuRenderList('bank');tpuRenderList('sup');tpuRingkas();
+  el('tpu-extra').open=false;
+  tpuRenderList('bank');tpuRenderList('sup');
+  if(kosong){el('tpu-dari').value='';el('tpu-sampai').value='';el('tpu-toko').innerHTML='<div class="empty"><p>Pilih Tanggal Ambil untuk pengambilan berikutnya</p></div>';tpuRingkas();}
+  else tpuPilihTgl();
+}
+// Pilih tanggal ambil -> periode otomatis (lanjut dari pengambilan terakhir) -> langsung muat data
+function tpuPilihTgl(){
+  const tgl=gv('tpu-tgl');if(!tgl)return;
+  if(!tpuEditId){
+    const sebelum=tpuList.filter(x=>x.sampai<tgl).sort((a,b)=>a.sampai<b.sampai?1:-1)[0];
+    el('tpu-dari').value=sebelum?tambahHari(sebelum.sampai,1):tambahHari(tgl,-6);
+    el('tpu-sampai').value=tgl;
+  }
+  tpuHitung();
 }
 async function tpuHitung(){
   const dari=gv('tpu-dari'),sampai=gv('tpu-sampai');
   if(!dari||!sampai){tpuAlert('Isi periode dari & sampai','err');return;}
   if(dari>sampai){tpuAlert('Tanggal "dari" tidak boleh lebih besar dari "sampai"','err');return;}
   el('tpu-toko').innerHTML='<div class="loading">Mengambil data setoran...</div>';
+  const seq=++tpuSeq;
   try{
     const rows=await dbAll(`setoran?select=toko,tgl,laci&tgl=gte.${dari}&tgl=lte.${sampai}&order=tgl.asc,id.asc`);
-    const lama={};tpuRows.forEach(r=>lama[r.toko]=r);
+    if(seq!==tpuSeq)return; // ada permintaan yang lebih baru
+    // Angka yang sudah diubah manual tetap dipertahankan; selain itu otomatis = uang sistem
+    const lama={};tpuRows.forEach(r=>{if(r.diubah||tpuEditId)lama[r.toko]=r;});
     const names=[...toko];rows.forEach(r=>{if(r.toko&&!names.includes(r.toko))names.push(r.toko);});
     tpuRows=names.map(t=>{
-      const rr=rows.filter(r=>r.toko===t);
-      return {toko:t,sistem:rr.reduce((s,r)=>s+(+r.laci||0),0),hari:new Set(rr.map(r=>r.tgl)).size,hitung:lama[t]?lama[t].hitung:'',ket:lama[t]?lama[t].ket:''};
+      const rr=rows.filter(r=>r.toko===t),sistem=rr.reduce((s,r)=>s+(+r.laci||0),0),L=lama[t];
+      return {toko:t,sistem,hari:new Set(rr.map(r=>r.tgl)).size,hitung:L&&L.hitung!==''?L.hitung:sistem,ket:L?L.ket:'',diubah:!!(L&&L.diubah)};
     });
     tpuRenderToko();
   }catch(e){el('tpu-toko').innerHTML='<div class="empty"><p>Gagal: '+esc(e.message)+'</p></div>';}
@@ -1351,7 +1368,7 @@ function tpuRenderToko(){
   el('tpu-toko').innerHTML=h;tpuRingkas();
 }
 function tpuSet(i,k,v){
-  tpuRows[i][k]=v===''?'':+v;
+  tpuRows[i][k]=v===''?'':+v;tpuRows[i].diubah=true;
   const c=el('tpu-sel-'+i);if(c)c.innerHTML=tpuSelHtml(tpuRows[i]);
   tpuRingkas();
 }
@@ -1401,18 +1418,16 @@ async function tpuSimpan(){
   const tgl=gv('tpu-tgl'),dari=gv('tpu-dari'),sampai=gv('tpu-sampai');
   if(!tgl||!dari||!sampai){tpuAlert('Tanggal ambil & periode wajib diisi','err');return;}
   if(dari>sampai){tpuAlert('Periode tidak valid','err');return;}
-  if(!tpuRows.length){tpuAlert('Klik "Ambil Data Setoran" dulu','err');return;}
+  if(!tpuRows.length){tpuAlert('Data setoran belum termuat, tunggu sebentar lalu coba lagi','err');return;}
   const t=tpuTotal();
-  if(!t.nDihitung){tpuAlert('Isi minimal satu "Uang Dihitung"','err');return;}
-  const blm=tpuRows.filter(r=>r.hitung===''&&r.sistem>0).map(r=>r.toko);
-  if(blm.length&&!confirm('Toko ini ada uang lacinya tapi belum diisi uang dihitung:\n- '+blm.join('\n- ')+'\n\nTetap simpan?'))return;
+  if(!t.sis&&!t.hit){tpuAlert('Tidak ada uang setoran di periode ini','err');return;}
   if(tpuBank.some(r=>r.jumlah!==''&&!r.bank.trim())){tpuAlert('Isi nama bank di setiap setoran bank','err');return;}
   if(tpuSup.some(r=>r.jumlah!==''&&!r.supplier.trim())){tpuAlert('Isi nama supplier di setiap pembayaran','err');return;}
   if(t.bank>t.hit&&!confirm('Total setor bank lebih besar dari uang yang dihitung. Tetap simpan?'))return;
   const bentrok=tpuList.filter(x=>x.id!==tpuEditId&&!(x.sampai<dari||x.dari>sampai));
   if(bentrok.length&&!confirm('Periode ini bertumpuk dengan pengambilan lain:\n'+bentrok.map(x=>'- '+tglIndo(x.dari)+' s/d '+tglIndo(x.sampai)).join('\n')+'\n\nTetap simpan?'))return;
   const row={tgl,dari,sampai,
-    detail:tpuRows.filter(r=>r.sistem||r.hitung!=='').map(r=>({toko:r.toko,sistem:+r.sistem||0,hari:r.hari,hitung:r.hitung===''?null:+r.hitung,selisih:r.hitung===''?null:(+r.hitung)-(+r.sistem||0),ket:(r.ket||'').trim()})),
+    detail:tpuRows.filter(r=>r.sistem||+r.hitung).map(r=>({toko:r.toko,sistem:+r.sistem||0,hari:r.hari,hitung:r.hitung===''?null:+r.hitung,selisih:r.hitung===''?null:(+r.hitung)-(+r.sistem||0),ket:(r.ket||'').trim()})),
     setor_bank:tpuBank.filter(r=>+r.jumlah).map(r=>({tgl:r.tgl,bank:r.bank.trim(),jumlah:+r.jumlah,ket:(r.ket||'').trim()})),
     bayar_supplier:tpuSup.filter(r=>+r.jumlah).map(r=>({supplier:r.supplier.trim(),jumlah:+r.jumlah,ket:(r.ket||'').trim()})),
     total_sistem:t.sis,total_hitung:t.hit,selisih:t.sel,total_bank:t.bank,total_supplier:t.sup,catatan:gv('tpu-cat').trim()};
@@ -1420,7 +1435,7 @@ async function tpuSimpan(){
   try{
     if(tpuEditId)await dbPatch('transfer_pusat',tpuEditId,row);else await dbPost('transfer_pusat',row);
     tpuAlert((tpuEditId?'Perubahan disimpan':'Tersimpan')+': '+tglIndo(dari)+' s/d '+tglIndo(sampai)+' · '+fmt(t.hit),'ok');
-    await tpuLoadRiwayat();tpuBaru();
+    await tpuLoadRiwayat();tpuBaru(true);
   }catch(e){tpuAlert(tpuTabelBelumAda(e)?'Tabel transfer_pusat belum dibuat di Supabase':'Gagal simpan: '+esc(e.message),'err');}
   btn.disabled=false;btn.innerHTML='💾 Simpan';
 }
@@ -1440,7 +1455,7 @@ async function tpuLoadRiwayat(){
       <td class="num">${fnum(r.total_sistem)}</td><td class="num" style="font-weight:700;color:var(--blue)">${fnum(r.total_hitung)}</td>
       <td class="num">${sel?`<span class="${sel>0?'tp-sel-plus':'tp-sel-min'}">${sel>0?'+':'−'}${fnum(Math.abs(sel))}</span>`:'<span class="tp-sel-ok">✓</span>'}</td>
       <td class="num">${fnum(r.total_bank)}</td><td class="num">${fnum(r.total_supplier)}</td><td class="num">${fnum((+r.total_hitung||0)-(+r.total_bank||0))}</td>
-      <td><div style="display:flex;gap:4px"><button class="btn bsm" onclick="tpuEdit(${r.id})" title="Lihat / Edit">✏️</button><button class="btn bsm" onclick="tpuCetak(${r.id})" title="Print bukti">🖨</button><button class="btn bsm br" onclick="tpuHapus(${r.id})" title="Hapus">✕</button></div></td></tr>`;
+      <td><div style="display:flex;gap:4px"><button class="btn bsm" onclick="tpuEdit(${r.id})" title="Lihat / Edit">✏️</button><button class="btn bsm" onclick="tpuCetak(${r.id})" title="Print bukti">🖨</button><button class="btn bsm" onclick="pdfJalan(()=>pdfTransfer(${r.id}),this)" title="Download PDF">📄</button><button class="btn bsm br" onclick="tpuHapus(${r.id})" title="Hapus">✕</button></div></td></tr>`;
   });
   h+=`<tr class="gr"><td colspan="2">TOTAL ${thn}</td><td class="num">${fnum(S('total_sistem'))}</td><td class="num" style="color:var(--blue)">${fnum(S('total_hitung'))}</td><td class="num">${fnum(S('selisih'))}</td><td class="num">${fnum(S('total_bank'))}</td><td class="num">${fnum(S('total_supplier'))}</td><td class="num">${fnum(S('total_hitung')-S('total_bank'))}</td><td></td></tr></tbody></table></div>`;
   el('tpu-riwayat').innerHTML=h;
@@ -1451,6 +1466,7 @@ function tpuEdit(id){
   el('tpu-tgl').value=r.tgl;el('tpu-dari').value=r.dari;el('tpu-sampai').value=r.sampai;el('tpu-cat').value=r.catatan||'';
   tpuRows=(r.detail||[]).map(d=>({toko:d.toko,sistem:+d.sistem||0,hari:d.hari||0,hitung:d.hitung===null||d.hitung===undefined?'':+d.hitung,ket:d.ket||''}));
   tpuBank=(r.setor_bank||[]).map(b=>({...b}));tpuSup=(r.bayar_supplier||[]).map(b=>({...b}));
+  el('tpu-extra').open=!!(tpuBank.length||tpuSup.length);
   el('tpu-judul').textContent='Edit Pengambilan '+tglIndo(r.dari)+' – '+tglIndo(r.sampai);
   el('tpu-batal-edit').style.display='';
   tpuRenderToko();tpuRenderList('bank');tpuRenderList('sup');tpuRingkas();
@@ -1497,267 +1513,180 @@ function tpuCetak(id){
   setTimeout(()=>window.print(),200);
 }
 
-// ===== PER TOKO =====
-async function loadPerToko(){
-  const thn=+gv('f-tahun-pt'),bln=gv('f-bulan-pt');
-  el('pertoko-tbl').innerHTML='<div class="loading">Memuat...</div>';el('pertoko-mc').innerHTML='';
-  let q=`select=*&tgl=gte.${thn}-01-01&tgl=lte.${thn}-12-31`;
-  if(bln){const p=String(bln).padStart(2,'0');q=`select=*&tgl=gte.${thn}-${p}-01&tgl=lte.${thn}-${p}-31`;}
-  try{
-    const rows=await db('setoran?'+q)||[];
-    tmpPerToko=rows;
-    const byT={};
-    toko.forEach(t=>byT[t]={total:0,laci:0,debit:0,hari:new Set(),rec:0});
-    rows.forEach(r=>{
-      if(!byT[r.toko])byT[r.toko]={total:0,laci:0,debit:0,hari:new Set(),rec:0};
-      byT[r.toko].total+=(r.glob||0);byT[r.toko].laci+=(r.laci||0);byT[r.toko].debit+=(r.debit||0);byT[r.toko].hari.add(r.tgl);byT[r.toko].rec++;
-    });
-    const gt=rows.reduce((s,r)=>s+(r.glob||0),0);
-    const sorted=Object.entries(byT).filter(e=>e[1].rec>0).sort((a,b)=>b[1].total-a[1].total);
-    el('pertoko-mc').innerHTML=`
-      <div class="mc"><div class="mcl">Grand Total</div><div class="mcv" style="font-size:13px;color:var(--blue)">${fmt(gt)}</div></div>
-      <div class="mc"><div class="mcl">Toko Aktif</div><div class="mcv">${sorted.length}</div></div>
-      <div class="mc"><div class="mcl">Toko Terbaik</div><div class="mcv" style="font-size:14px">${sorted[0]?sorted[0][0]:'-'}</div></div>
-      <div class="mc"><div class="mcl">Rata-rata/Toko</div><div class="mcv" style="font-size:13px">${fmt(sorted.length?Math.round(gt/sorted.length):0)}</div></div>`;
-    if(!rows.length){el('pertoko-tbl').innerHTML='<div class="empty"><p>Tidak ada data</p></div>';return;}
-    let h=`<div class="tblw"><table><thead><tr><th>Rank</th><th>Toko</th><th>Hari</th><th>Record</th>
-      <th class="num">Total Laci</th><th class="num">Total Debit</th><th class="num">Total Global</th><th class="num">Rata-rata/Hari</th><th>Proporsi</th>
-    </tr></thead><tbody>`;
-    sorted.forEach(([t,b],i)=>{
-      const hari=b.hari.size,pct=gt?(b.total/gt*100):0,clr=CLR[i%CLR.length];
-      h+=`<tr>
-        <td style="font-weight:700;color:${clr}">#${i+1}</td>
-        <td><span class="badge bb">${t}</span></td>
-        <td>${hari}</td><td>${b.rec}</td>
-        <td class="num">${fnum(b.laci)}</td><td class="num">${fnum(b.debit)}</td>
-        <td class="num" style="font-weight:700;color:var(--blue)">${fnum(b.total)}</td>
-        <td class="num">${fnum(hari?Math.round(b.total/hari):0)}</td>
-        <td><div style="display:flex;align-items:center;gap:7px">
-          <div class="pbg" style="width:90px"><div class="pfil" style="width:${pct.toFixed(1)}%;background:${clr}"></div></div>
-          <span style="font-size:11px">${pct.toFixed(1)}%</span>
-        </div></td>
-      </tr>`;
-    });
-    h+='</tbody></table></div>';
-    el('pertoko-tbl').innerHTML=h;
-  }catch(e){el('pertoko-tbl').innerHTML='<div class="empty"><p>Gagal: '+e.message+'</p></div>';}
-}
-
-// ===== GRAFIK =====
-async function renderChart(){
-  const type=gv('g-type'),thn=+gv('g-tahun'),bln=+gv('g-bulan');
-  if(chartInst){chartInst.destroy();chartInst=null;}
-  el('chart-legend').innerHTML='';
-  const ctx=el('mainChart').getContext('2d');
-  let rows=[];
-  try{
-    if(type==='line'){const p=String(bln).padStart(2,'0');rows=await db(`setoran?select=tgl,toko,glob&tgl=gte.${thn}-${p}-01&tgl=lte.${thn}-${p}-31&order=tgl.asc`)||[];}
-    else{rows=await db(`setoran?select=tgl,toko,glob&tgl=gte.${thn}-01-01&tgl=lte.${thn}-12-31`)||[];}
-  }catch(e){return;}
-  const opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:d=>'Rp '+Math.round(d.raw).toLocaleString('id-ID')}}},scales:{y:{ticks:{callback:v=>'Rp '+Math.round(v/1000000)+'jt'},grid:{color:'rgba(0,0,0,0.04)'}},x:{grid:{display:false}}}};
-  if(type==='bar-bulan'){
-    const byB={};rows.forEach(r=>{const bi=+r.tgl.slice(5,7)-1;byB[bi]=(byB[bi]||0)+(r.glob||0);});
-    el('chart-legend').innerHTML=`<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#2E75B6;display:inline-block"></span>Global Kasir per Bulan ${thn}</span>`;
-    chartInst=new Chart(ctx,{type:'bar',data:{labels:BLN,datasets:[{data:BLN.map((_,i)=>Math.round(byB[i]||0)),backgroundColor:'#B5D4F4',borderColor:'#2E75B6',borderWidth:1.5,borderRadius:5}]},options:opts});
-  } else if(type==='bar-toko'){
-    const byT={};rows.forEach(r=>{byT[r.toko]=(byT[r.toko]||0)+(r.glob||0);});
-    el('chart-legend').innerHTML=toko.map((t,i)=>`<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:${CLR[i%CLR.length]};display:inline-block"></span>${t}</span>`).join('');
-    chartInst=new Chart(ctx,{type:'bar',data:{labels:toko,datasets:[{data:toko.map(t=>Math.round(byT[t]||0)),backgroundColor:toko.map((_,i)=>CLR[i%CLR.length]+'99'),borderColor:toko.map((_,i)=>CLR[i%CLR.length]),borderWidth:1.5,borderRadius:5}]},options:opts});
-  } else if(type==='line'){
-    const byTgl={};rows.forEach(r=>{byTgl[r.tgl]=(byTgl[r.tgl]||0)+(r.glob||0);});
-    const labels=Object.keys(byTgl).sort();
-    el('chart-legend').innerHTML=`<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#1D9E75;display:inline-block"></span>Tren Harian — ${BLN[bln-1]} ${thn}</span>`;
-    chartInst=new Chart(ctx,{type:'line',data:{labels,datasets:[{data:labels.map(t=>Math.round(byTgl[t])),borderColor:'#1D9E75',backgroundColor:'rgba(29,158,117,0.08)',fill:true,tension:.35,pointRadius:4,pointBackgroundColor:'#1D9E75'}]},options:opts});
-  } else {
-    const byT={};rows.forEach(r=>{byT[r.toko]=(byT[r.toko]||0)+(r.glob||0);});
-    const labels=toko.filter(t=>byT[t]),vals=labels.map(t=>Math.round(byT[t]||0));
-    const tot=vals.reduce((a,b)=>a+b,0);
-    el('chart-legend').innerHTML=labels.map((t,i)=>`<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:${CLR[i%CLR.length]};display:inline-block"></span>${t} ${tot?(vals[i]/tot*100).toFixed(1):0}%</span>`).join('');
-    chartInst=new Chart(ctx,{type:'doughnut',data:{labels,datasets:[{data:vals,backgroundColor:labels.map((_,i)=>CLR[i%CLR.length]),borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:d=>'Rp '+Math.round(d.raw).toLocaleString('id-ID')+' ('+((d.raw/tot)*100).toFixed(1)+'%)'}}}}});
+// ===== PDF (download langsung) =====
+const PDF_LIB=['https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js','https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js'];
+let pdfLibP=null;
+function muatPdf(){
+  if(window.jspdf&&window.jspdf.jsPDF.API.autoTable)return Promise.resolve();
+  if(!pdfLibP){
+    const add=src=>new Promise((ok,no)=>{const sc=document.createElement('script');sc.src=src;sc.onload=ok;sc.onerror=()=>no(new Error('library PDF gagal dimuat, cek internet'));document.head.appendChild(sc);});
+    pdfLibP=add(PDF_LIB[0]).then(()=>add(PDF_LIB[1])).catch(e=>{pdfLibP=null;throw e;});
   }
+  return pdfLibP;
 }
-
-// ===== TARGET =====
-function renderTargetForm(){
-  el('target-form').innerHTML='<div class="g2">'+toko.map(t=>`<div><label class="lbl">${t}</label><input type="number" id="tg-${t.replace(/\s/g,'_')}" placeholder="0" value="${targets[t]||''}"></div>`).join('')+'</div>';
+async function pdfJalan(fn,btn){
+  const t=btn?btn.innerHTML:'';
+  if(btn){btn.disabled=true;btn.innerHTML='⏳ Membuat PDF...';}
+  try{await muatPdf();await fn();}
+  catch(e){alert('Gagal membuat PDF: '+e.message);}
+  if(btn){btn.disabled=false;btn.innerHTML=t;}
 }
-function simpanTarget(){
-  toko.forEach(t=>{const v=+gv('tg-'+t.replace(/\s/g,'_'))||0;if(v>0)targets[t]=v;else delete targets[t];});
-  saveTargets();alert('Target berhasil disimpan!');loadTarget();
+const pdfTxt=v=>String(v??'').replace(/[–—]/g,'-').replace(/[^\x20-\x7E\xA0-\xFF\n]/g,'');
+const tglPdf=t=>t?new Date(t+'T00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}):'-';
+const nmFile=s=>pdfTxt(s).replace(/[^A-Za-z0-9_-]+/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'');
+function pdfDoc(judul,sub,land){
+  const doc=new window.jspdf.jsPDF({orientation:land?'landscape':'portrait',unit:'mm',format:'a4'});
+  const W=doc.internal.pageSize.getWidth();
+  doc.setFillColor(31,78,121);doc.rect(0,0,W,3,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(15);doc.setTextColor(26,24,20);doc.text(pdfTxt(judul),12,13);
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(107,101,96);doc.text(pdfTxt(sub),12,19);
+  doc.setDrawColor(31,78,121);doc.setLineWidth(.5);doc.line(12,22,W-12,22);
+  doc._y=28;return doc;
 }
-async function loadTarget(){
-  const bln=+gv('tp-bln'),thn=+gv('tp-thn');
-  const p=String(bln).padStart(2,'0');
-  let rows=[];
-  try{rows=await db(`setoran?select=toko,glob&tgl=gte.${thn}-${p}-01&tgl=lte.${thn}-${p}-31`)||[];}catch(e){}
-  const aktual={};rows.forEach(r=>{aktual[r.toko]=(aktual[r.toko]||0)+(r.glob||0);});
-  let h='';
-  toko.forEach(t=>{
-    const tgt=targets[t]||0,akt=aktual[t]||0,pct=tgt?(akt/tgt*100):0;
-    const clr=pct>=100?'var(--grn)':pct>=70?'var(--amb)':'var(--red)';
-    const bg=pct>=100?'#639922':pct>=70?'#EF9F27':'#E24B4A';
-    h+=`<div style="margin-bottom:13px">
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-        <span style="font-size:13px;font-weight:600">${t}</span>
-        <span style="font-size:12px;font-family:'JetBrains Mono',monospace">${fmt(akt)} / ${tgt?fmt(tgt):'Belum diset'}</span>
-      </div>
-      ${tgt?`<div class="pbg"><div class="pfil" style="width:${Math.min(pct,100).toFixed(1)}%;background:${bg}"></div></div>
-      <div style="font-size:11px;color:${clr};margin-top:3px;font-weight:600">${pct.toFixed(1)}%${pct>=100?' — TARGET TERCAPAI ✓':''}</div>`:'<div style="font-size:11px;color:var(--tx3)">Belum ada target</div>'}
-    </div>`;
+function pdfCek(doc,butuh){if(doc._y+butuh>doc.internal.pageSize.getHeight()-14){doc.addPage();doc._y=15;}}
+// Kotak ringkasan: items=[[label,nilai,warna?]]
+function pdfKartu(doc,items){
+  pdfCek(doc,20);
+  const W=doc.internal.pageSize.getWidth()-24,gap=3,w=(W-gap*(items.length-1))/items.length;
+  items.forEach(([l,v,c],i)=>{
+    const x=12+i*(w+gap);
+    doc.setFillColor(240,238,232);doc.setDrawColor(226,221,213);doc.setLineWidth(.2);doc.roundedRect(x,doc._y,w,15,1.5,1.5,'FD');
+    doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(158,152,144);doc.text(pdfTxt(l).toUpperCase(),x+3,doc._y+5);
+    doc.setFontSize(10.5);doc.setTextColor(...(c||[26,24,20]));doc.text(pdfTxt(v),x+3,doc._y+11.5);
   });
-  el('target-prog').innerHTML=h;
+  doc._y+=21;
+}
+function pdfJudul(doc,t){pdfCek(doc,22);doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(46,117,182);doc.text(pdfTxt(t).toUpperCase(),12,doc._y);doc._y+=2;}
+function pdfCatatan(doc,t){pdfCek(doc,10);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(107,101,96);const ln=doc.splitTextToSize(pdfTxt(t),doc.internal.pageSize.getWidth()-24);doc.text(ln,12,doc._y);doc._y+=ln.length*4+4;}
+// Tabel: num = index kolom angka (rata kanan); warna(sec,ri,ci,raw) -> [r,g,b]
+function pdfTabel(doc,judul,head,body,o={}){
+  if(judul)pdfJudul(doc,judul);
+  const num=o.num||[];
+  doc.autoTable({startY:doc._y+1,head:[head.map(pdfTxt)],body:body.map(r=>r.map(pdfTxt)),foot:o.foot?[o.foot.map(pdfTxt)]:undefined,showFoot:'lastPage',
+    theme:'grid',margin:{left:12,right:12,top:14,bottom:14},
+    styles:{font:'helvetica',fontSize:o.fs||8,cellPadding:1.5,lineColor:[226,221,213],lineWidth:.1,textColor:[26,24,20],overflow:'linebreak'},
+    headStyles:{fillColor:[240,238,232],textColor:[107,101,96],fontStyle:'bold'},
+    footStyles:{fillColor:[240,238,232],textColor:[26,24,20],fontStyle:'bold'},
+    columnStyles:o.cols||{},
+    didParseCell:d=>{
+      if(num.includes(d.column.index))d.cell.styles.halign='right';
+      if(o.warna){const c=o.warna(d.section,d.row.index,d.column.index,d.cell.raw);if(c){d.cell.styles.textColor=c;d.cell.styles.fontStyle='bold';}}
+    }});
+  doc._y=doc.lastAutoTable.finalY+8;
+}
+function pdfSimpan(doc,nama){
+  const n=doc.getNumberOfPages(),W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();
+  const wkt=new Date().toLocaleString('id-ID',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  for(let i=1;i<=n;i++){doc.setPage(i);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(158,152,144);
+    doc.text(pdfTxt('AWW Fashion - Rekap Setoran - dibuat '+wkt),12,H-7);doc.text('Hal '+i+' / '+n,W-12,H-7,{align:'right'});}
+  doc.save(nmFile(nama)+'.pdf');
+}
+const MERAH=[163,45,45],HIJAU=[59,109,17],BIRU=[31,78,121];
+const pctTxt=p=>p===null?'-':(p>=0?'+':'')+p.toFixed(1)+'%';
+const warnaPct=raw=>/^\+/.test(raw)?HIJAU:/^-\d/.test(raw)?MERAH:null;
+
+// 1. Rekap Harian (laporan setoran anak-anak per hari)
+async function pdfHarian(){
+  await loadRekap();
+  const rows=tmpRekap;
+  if(!rows.length){alert('Tidak ada data untuk filter ini');return;}
+  const tf=gv('f-toko'),fk=gv('f-kasir').trim();
+  const dr=gv('f-dari')||rows[0].tgl,sp=gv('f-sampai')||rows[rows.length-1].tgl;
+  const doc=pdfDoc('Laporan Setoran Harian',`${tf||'Semua Toko'}  |  ${tglPdf(dr)} s/d ${tglPdf(sp)}${fk?'  |  Kasir: '+fk:''}`,true);
+  const S=k=>rows.reduce((a,r)=>a+(+r[k]||0),0);
+  pdfKartu(doc,[['Jumlah Setoran',String(rows.length)],['Total Uang Laci',fmt(S('laci'))],['Total Debit',fmt(S('debit'))],['Total Pengeluaran',fmt(S('keluar'))],['Total Global Kasir',fmt(S('glob')),BIRU]]);
+  // Kepatuhan setor per toko
+  const hariIni=tglLokal(new Date()),akhir=sp<hariIni?sp:hariIni,hari=[];
+  for(let t=dr;t<=akhir;t=tambahHari(t,1))hari.push(t);
+  const daftar=tf?[tf]:[...toko,...new Set(rows.map(r=>r.toko).filter(t=>!toko.includes(t)))];
+  const body=daftar.map(t=>{
+    const rr=rows.filter(r=>r.toko===t),per={};rr.forEach(r=>per[r.tgl]=(per[r.tgl]||0)+1);
+    const kosong=hari.filter(h=>!per[h]),dobel=Object.keys(per).filter(h=>per[h]>1);
+    return [t,`${Object.keys(per).length} / ${hari.length}`,String(kosong.length),kosong.length?kosong.map(h=>h.slice(8)+'/'+h.slice(5,7)).join(', '):'Lengkap',dobel.length?dobel.map(h=>h.slice(8)+'/'+h.slice(5,7)).join(', '):'-',fnum(rr.reduce((a,r)=>a+(+r.glob||0),0))];
+  });
+  pdfTabel(doc,'Kepatuhan Setor Per Toko',['Toko','Hari Setor','Hari Kosong','Tanggal Belum Setor','Input Dobel','Total Global'],body,
+    {num:[1,2,5],cols:{3:{cellWidth:90}},warna:(sec,ri,ci,raw)=>sec==='body'&&((ci===2&&raw!=='0')||(ci===3&&raw!=='Lengkap')||(ci===4&&raw!=='-'))?MERAH:sec==='body'&&ci===3?HIJAU:null});
+  if(fk)pdfCatatan(doc,'Catatan: filter kasir aktif, jadi "Hari Kosong" hanya menghitung setoran kasir tersebut.');
+  // Detail
+  const det=rows.map(r=>[tglPdf(r.tgl),r.toko,r.kasir||'-',fnum(r.laci),r.keluar?fnum(r.keluar):'-',r.qris?fnum(r.qris):'-',r.bca?fnum(r.bca):'-',r.bni?fnum(r.bni):'-',r.bri?fnum(r.bri):'-',r.mandiri?fnum(r.mandiri):'-',fnum(r.debit),r.real_cash?fnum(r.real_cash):'-',fnum(r.glob)]);
+  pdfTabel(doc,'Detail Setoran',['Tanggal','Toko','Kasir','Uang Laci','Pengeluaran','QRIS','BCA','BNI','BRI','Mandiri','Total Debit','Uang Real','Global Kasir'],det,
+    {num:[3,4,5,6,7,8,9,10,11,12],fs:7.5,foot:['TOTAL ('+rows.length+')','','',fnum(S('laci')),fnum(S('keluar')),fnum(S('qris')),fnum(S('bca')),fnum(S('bni')),fnum(S('bri')),fnum(S('mandiri')),fnum(S('debit')),fnum(S('real_cash')),fnum(S('glob'))],
+     warna:(sec,ri,ci)=>sec!=='head'&&ci===12?BIRU:null});
+  pdfSimpan(doc,`Setoran_Harian_${tf||'Semua'}_${dr}_${sp}`);
 }
 
-// ===== TOKO =====
-function renderTokoList(){
-  el('toko-list').innerHTML=toko.map((t,i)=>`
-    <div class="trow">
-      <span style="font-size:13px;font-weight:500">${i+1}. ${t}</span>
-      <div style="display:flex;gap:5px">
-        <button class="btn bsm" onclick="upToko(${i})" ${i===0?'disabled':''}>↑</button>
-        <button class="btn bsm br" onclick="hapusToko(${i})">Hapus</button>
-      </div>
-    </div>`).join('');
-}
-function tambahToko(){
-  const v=el('new-toko').value.trim();
-  if(!v||toko.includes(v)){alert(v?'Sudah ada':'Isi nama toko');return;}
-  toko.push(v);saveToko();
-  buildSel(['i-toko'],false);buildSel(['f-toko','f-toko-bul','pe-toko'],true);
-  renderTokoList();renderTargetForm();el('new-toko').value='';
-}
-function hapusToko(i){
-  if(!confirm('Hapus toko?'))return;
-  toko.splice(i,1);saveToko();
-  buildSel(['i-toko'],false);buildSel(['f-toko','f-toko-bul','pe-toko'],true);
-  renderTokoList();renderTargetForm();
-}
-function upToko(i){
-  if(i===0)return;[toko[i-1],toko[i]]=[toko[i],toko[i-1]];saveToko();
-  buildSel(['i-toko'],false);buildSel(['f-toko','f-toko-bul','pe-toko'],true);renderTokoList();
+// 2. Rekap Bulanan (setahun)
+async function pdfBulanan(){
+  await loadBulanan();
+  const rows=tmpBulanan,thn=+gv('f-tahun'),tf=gv('f-toko-bul');
+  if(!rows.length){alert('Tidak ada data tahun '+thn);return;}
+  let pq=`select=*&thn=eq.${thn}`;if(tf)pq+='&toko=eq.'+encodeURIComponent(tf);
+  const pens=await dbAll('pengeluaran_bulanan?'+pq);
+  const byB={};rows.forEach(r=>{const bi=+r.tgl.slice(5,7)-1;(byB[bi]=byB[bi]||[]).push(r);});
+  const penB={};pens.forEach(p=>penB[p.bln-1]=(penB[p.bln-1]||0)+(+p.jumlah||0));
+  const gt=rows.reduce((a,r)=>a+(+r.glob||0),0),tp=pens.reduce((a,p)=>a+(+p.jumlah||0),0);
+  const doc=pdfDoc('Rekap Bulanan '+thn,tf||'Semua Toko',true);
+  pdfKartu(doc,[['Total Omset',fmt(gt),BIRU],['Total Pengeluaran Bulanan','-'+fmt(tp),MERAH],['Omset Bersih',fmt(gt-tp),HIJAU],['Jumlah Setoran',String(rows.length)]]);
+  const body=Object.keys(byB).sort((a,b)=>a-b).map(bi=>{const s=rinSum(byB[bi]),pb=penB[bi]||0;
+    return [BLN[bi],String(s.nHari),fnum(s.tunai),fnum(s.qris),fnum(s.bca+s.bni+s.bri+s.mandiri),fnum(s.glob),pb?'-'+fnum(pb):'-',fnum(s.glob-pb),fnum(s.glob/(s.nHari||1))];});
+  const T=rinSum(rows);
+  pdfTabel(doc,'Per Bulan',['Bulan','Hari','Tunai','QRIS','EDC (semua bank)','Total Omset','Pengeluaran Bulanan','Omset Bersih','Rata-rata/Hari'],body,
+    {num:[1,2,3,4,5,6,7,8],foot:['TOTAL '+thn,'',fnum(T.tunai),fnum(T.qris),fnum(T.bca+T.bni+T.bri+T.mandiri),fnum(gt),tp?'-'+fnum(tp):'-',fnum(gt-tp),''],
+     warna:(sec,ri,ci)=>sec!=='head'?(ci===5?BIRU:ci===6?MERAH:ci===7?HIJAU:null):null});
+  if(pens.length)pdfTabel(doc,'Pengeluaran Bulanan',['Bulan','Toko','Keterangan','Jumlah'],pens.slice().sort((a,b)=>a.bln-b.bln).map(p=>[BLN[p.bln-1],p.toko||'Semua',p.ket||'-','-'+fnum(p.jumlah)]),
+    {num:[3],foot:['TOTAL','','','-'+fnum(tp)],warna:(sec,ri,ci)=>ci===3&&sec!=='head'?MERAH:null});
+  pdfSimpan(doc,`Rekap_Bulanan_${thn}_${tf||'Semua'}`);
 }
 
-// ===== EXPORT =====
-function exportExcel(jenis){
-  if(jenis==='harian'){
-    if(!tmpRekap.length){alert('Tampilkan data dulu');return;}
-    const ws=XLSX.utils.json_to_sheet(tmpRekap.map(r=>({'Tanggal':r.tgl,'Toko':r.toko,'Kasir':r.kasir,'Uang Laci':r.laci,'Pengeluaran':r.keluar,'QRIS':r.qris,'EDC BCA':r.bca,'EDC BNI':r.bni,'EDC BRI':r.bri,'EDC Mandiri':r.mandiri,'Uang Real':r.real_cash,'Total Debit':r.debit,'Global Kasir':r.glob})));
-    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Rekap Harian');
-    XLSX.writeFile(wb,`Rekap_Harian_AWW_${new Date().toISOString().slice(0,10)}.xlsx`);
-  } else {
-    if(!tmpBulanan.length){alert('Tampilkan data dulu');return;}
-    const byB={};
-    tmpBulanan.forEach(r=>{const bi=+r.tgl.slice(5,7)-1;(byB[bi]=byB[bi]||[]).push(r);});
-    const ws=XLSX.utils.json_to_sheet(Object.keys(byB).sort((a,b)=>+a-+b).map(bi=>{const s=rinSum(byB[bi]);return {Bulan:BLN[+bi],'Hari':s.nHari,'Record':s.rec,'Tunai':s.tunai,'QRIS':s.qris,'EDC BCA':s.bca,'EDC BNI':s.bni,'EDC BRI':s.bri,'EDC Mandiri':s.mandiri,'Pengeluaran Kasir':s.keluar,'Total Laci':s.laci,'Total Debit':s.debit,'Total Global Kasir':s.glob,'Rata-rata/Hari':Math.round(s.glob/(s.nHari||1))};}));
-    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Rekap Bulanan');
-    // Sheet rincian per toko per bulan
-    const rinc=[];
-    Object.keys(byB).sort((a,b)=>+a-+b).forEach(bi=>{
-      const names=[...new Set(byB[bi].map(r=>r.toko))];
-      names.forEach(t=>{const s=rinSum(byB[bi].filter(r=>r.toko===t));rinc.push({Bulan:BLN[+bi],Toko:t,'Hari':s.nHari,'Tunai':s.tunai,'QRIS':s.qris,'EDC BCA':s.bca,'EDC BNI':s.bni,'EDC BRI':s.bri,'EDC Mandiri':s.mandiri,'Pengeluaran Kasir':s.keluar,'Total Omset':s.glob});});
-    });
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rinc),'Rincian Per Toko');
-    XLSX.writeFile(wb,`Rekap_Bulanan_AWW_${gv('f-tahun')}.xlsx`);
-  }
-}
-function exportCSV(){
-  if(!tmpRekap.length){alert('Tampilkan data dulu');return;}
-  let csv='Tanggal,Toko,Kasir,Uang Laci,Pengeluaran,QRIS,BCA,BNI,BRI,Mandiri,Uang Real,Total Debit,Global Kasir\n';
-  tmpRekap.forEach(r=>csv+=`${r.tgl},${r.toko},${r.kasir},${r.laci},${r.keluar},${r.qris},${r.bca},${r.bni},${r.bri},${r.mandiri},${r.real_cash},${r.debit},${r.glob}\n`);
-  const blob=new Blob([csv],{type:'text/csv'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download='rekap_aww.csv';a.click();URL.revokeObjectURL(url);
+// 3. Per Toko
+async function pdfPerToko(){
+  await loadPerToko();
+  const rows=tmpPerToko,thn=+gv('f-tahun-pt'),bln=gv('f-bulan-pt');
+  const per=bln?BLN[bln-1]+' '+thn:'Tahun '+thn;
+  if(!rows.length){alert('Tidak ada data '+per);return;}
+  const names=[...toko,...new Set(rows.map(r=>r.toko).filter(t=>!toko.includes(t)))];
+  const gt=rows.reduce((a,r)=>a+(+r.glob||0),0);
+  const list=names.map(t=>({t,s:rinSum(rows.filter(r=>r.toko===t))})).filter(x=>x.s.rec).sort((a,b)=>b.s.glob-a.s.glob);
+  const doc=pdfDoc('Rekap Per Toko',per,true);
+  pdfKartu(doc,[['Grand Total',fmt(gt),BIRU],['Toko Aktif',String(list.length)],['Toko Terbaik',list[0]?list[0].t:'-'],['Rata-rata / Toko',fmt(list.length?gt/list.length:0)]]);
+  pdfTabel(doc,'Peringkat Toko',['#','Toko','Hari','Setoran','Tunai','QRIS','EDC (semua bank)','Pengeluaran Kasir','Total Global','Rata-rata/Hari','Porsi'],
+    list.map((x,i)=>[String(i+1),x.t,String(x.s.nHari),String(x.s.rec),fnum(x.s.tunai),fnum(x.s.qris),fnum(x.s.bca+x.s.bni+x.s.bri+x.s.mandiri),fnum(x.s.keluar),fnum(x.s.glob),fnum(x.s.glob/(x.s.nHari||1)),(gt?x.s.glob/gt*100:0).toFixed(1)+'%']),
+    {num:[0,2,3,4,5,6,7,8,9,10],foot:['','TOTAL','','',fnum(list.reduce((a,x)=>a+x.s.tunai,0)),fnum(list.reduce((a,x)=>a+x.s.qris,0)),fnum(list.reduce((a,x)=>a+x.s.bca+x.s.bni+x.s.bri+x.s.mandiri,0)),fnum(list.reduce((a,x)=>a+x.s.keluar,0)),fnum(gt),'','100%'],
+     warna:(sec,ri,ci)=>sec!=='head'&&ci===8?BIRU:null});
+  pdfSimpan(doc,`Rekap_Per_Toko_${bln?BLN[bln-1]+'_':''}${thn}`);
 }
 
-// ===== INFO & INIT =====
-async function updateInfo(){
-  try{
-    const cnt=await db('setoran?select=id')||[];
-    const u=sessionStorage.getItem('aww_auth')||'-';
-    el('info-conn').innerHTML=`URL: <strong>daitsyyqplxlhdwjysry.supabase.co</strong><br>Total record: <strong>${cnt.length}</strong><br>Toko: <strong>${toko.length}</strong><br>User login: <strong>${u}</strong><br>Role: <strong>${isAdmin(u)?'Admin (Akses Penuh)':'Kasir'}</strong>`;
-  }catch(e){}
+// 4. Rincian bulanan
+async function pdfRincian(){
+  const thn=+gv('f-tahun'),bln=+gv('f-bln-rin'),tf=gv('f-toko-bul');
+  if(!rinData||rinData.thn!==thn||rinData.bln!==bln||rinData.tf!==tf)await loadRincian();
+  const d=rinData;if(!d)return;
+  const n=d.now,p=d.prev,B=BLN[d.bln-1],BP=BLN[d.pb-1];
+  if(!n.rec){alert('Belum ada data setoran '+B+' '+thn);return;}
+  const doc=pdfDoc(`Rincian Setoran ${B} ${d.thn}`,`${d.tf||'Semua Toko'}  |  dibanding ${BP} ${d.pt}`,true);
+  pdfKartu(doc,[[`Omset ${B}`,fmt(n.glob),BIRU],[`vs ${BP}`,pctTxt(pctChg(n.glob,p.glob)),warnaPct(pctTxt(pctChg(n.glob,p.glob)))],['Pengeluaran Bulanan','-'+fmt(d.totPen),MERAH],['Omset Bersih',fmt(n.glob-d.totPen),HIJAU],['Rata-rata / Hari',fmt(n.glob/(n.nHari||1))]]);
+  pdfTabel(doc,'Per Metode Pembayaran',['Metode',B,'Porsi',BP,'Perubahan'],
+    METODE.map(([k,nm])=>[nm,fnum(n[k]),(n.glob?n[k]/n.glob*100:0).toFixed(1)+'%',fnum(p[k]),pctTxt(pctChg(n[k],p[k]))]),
+    {num:[1,2,3,4],foot:['TOTAL',fnum(n.glob),'100%',fnum(p.glob),pctTxt(pctChg(n.glob,p.glob))],warna:(sec,ri,ci,raw)=>ci===4&&sec!=='head'?warnaPct(raw):null});
+  pdfTabel(doc,`Per Toko (dibanding ${BP})`,['#','Toko','Hari',`Omset ${B}`,BP,'Perubahan','Porsi'],
+    d.perToko.map((x,i)=>[String(i+1),x.toko,String(x.now.nHari),fnum(x.now.glob),fnum(x.prev.glob),pctTxt(pctChg(x.now.glob,x.prev.glob)),(n.glob?x.now.glob/n.glob*100:0).toFixed(1)+'%']),
+    {num:[0,2,3,4,5,6],warna:(sec,ri,ci,raw)=>sec==='body'&&ci===5?warnaPct(raw):sec==='body'&&ci===3?BIRU:null});
+  pdfTabel(doc,'Rincian Toko x Metode Bayar',['Toko',...METODE.map(m=>m[1]),'Pengeluaran Kasir','Total Omset'],
+    d.perToko.map(x=>[x.toko,...METODE.map(([k])=>x.now[k]?fnum(x.now[k]):'-'),x.now.keluar?fnum(x.now.keluar):'-',fnum(x.now.glob)]),
+    {num:[1,2,3,4,5,6,7,8],foot:['TOTAL',...METODE.map(([k])=>fnum(n[k])),fnum(n.keluar),fnum(n.glob)],warna:(sec,ri,ci)=>sec!=='head'&&ci===8?BIRU:null});
+  pdfTabel(doc,'Pengeluaran Bulanan',['Toko','Keterangan','Jumlah'],d.pens.length?d.pens.map(x=>[x.toko||'Semua',x.ket||'-','-'+fnum(x.jumlah)]):[['-','Tidak ada pengeluaran bulanan','-']],
+    {num:[2],foot:['TOTAL','','-'+fnum(d.totPen)],warna:(sec,ri,ci)=>ci===2&&sec!=='head'?MERAH:null});
+  pdfSimpan(doc,`Rincian_${B}_${d.thn}_${d.tf||'Semua'}`);
 }
 
-// ===== PASSWORD KASIR INFO =====
-function renderPasswordInfo(){
-  const kasirList=[
-    {u:'srengat',t:'Srengat',pw:'srengat123'},
-    {u:'talun',t:'Talun',pw:'talun123'},
-    {u:'wonodadi atk',t:'Wonodadi ATK',pw:'wonodadi123'},
-    {u:'wonodadi fashion',t:'Wonodadi Fashion',pw:'wonodadi456'},
-    {u:'cangkring atk',t:'Cangkring ATK',pw:'cangkring123'},
-    {u:'cangkring fashion',t:'Cangkring Fashion',pw:'cangkring456'},
-    {u:'kauman',t:'Kauman',pw:'kauman123'},
-  ];
-  const el_pw=document.getElementById('pw-kasir-info');
-  if(!el_pw)return;
-  el_pw.innerHTML='<div class="tblw"><table><thead><tr><th>Toko</th><th>Username</th><th>Password Default</th></tr></thead><tbody>'+
-    kasirList.map(k=>`<tr><td>${k.t}</td><td style="font-family:'JetBrains Mono',monospace">${k.u}</td><td style="font-family:'JetBrains Mono',monospace">${k.pw}</td></tr>`).join('')+
-    '</tbody></table></div>';
-}
-
-async function init(){
-  const u=sessionStorage.getItem('aww_auth')||'';
-  el('i-tgl').value=new Date().toISOString().split('T')[0];
-  buildSel(['i-toko'],false);
-  buildSel(['f-toko','f-toko-bul','pe-toko'],true);
-  buildYears();buildMonths();
-
-  if(isAdmin(u)){
-    // Tampilkan semua menu
-    document.querySelectorAll('.ni').forEach(n=>n.style.display='');
-    document.querySelector('.side-ft .btn').style.display='';
-    // Info user di sidebar
-    el('conn-txt').textContent='Admin — Gudang';
-  } else {
-    // Kasir: hanya tampilkan Input Setoran + Rekap Harian
-    document.querySelectorAll('.ni').forEach(n=>{
-      const txt=(n.textContent||'').trim();
-      const boleh = txt.startsWith('Input') || txt.startsWith('Rekap Harian');
-      if(!boleh) n.style.display='none';
-    });
-    // Sembunyikan nav-sec Analisis & Sistem
-    document.querySelectorAll('.nav-sec').forEach(n=>{
-      const txt=n.textContent.trim();
-      if(txt==='Analisis'||txt==='Sistem') n.style.display='none';
-    });
-    // Set toko otomatis sesuai username
-    const tokoMap = {
-      'srengat':'Srengat','talun':'Talun',
-      'wonodadi atk':'Wonodadi ATK','wonodadi fashion':'Wonodadi Fashion',
-      'cangkring atk':'Cangkring ATK','cangkring fashion':'Cangkring Fashion',
-      'kauman':'Kauman'
-    };
-    const myToko = tokoMap[u];
-    if(myToko){
-      // Set toko di select dan disable
-      const sel=el('i-toko');
-      sel.value=myToko;
-      sel.disabled=true;
-      sel.style.background='var(--surf2)';
-    }
-    // Update info sidebar
-    el('conn-txt').textContent='Kasir — '+(tokoMap[u]||u);
-    // Tampilkan badge toko di header input
-    const ph=document.querySelector('#page-input .ps');
-    if(ph&&myToko) ph.textContent='Toko: '+myToko+' — data langsung tersimpan ke server';
-  }
-
-  // Test koneksi
-  try{await db('setoran?limit=1&select=id');setConn(true);}catch(e){setConn(false);}
-}
-
-// Cek session saat halaman dibuka
-window.onload=()=>{
-  if(sessionStorage.getItem('aww_auth')){
-    el('login-page').style.display='none';
-    el('app-page').style.display='block';
-    init();
-  }
-};
-
-// Tambah hint username di login
-document.getElementById('l-user').setAttribute('placeholder','admin / nama toko');
-</script>
-</body>
-</html>
+// 5. Transfer Pusat (bukti per pengambilan)
+async function pdfTransfer(id){
+  const r=tpuList.find(x=>x.id===id);if(!r)return;
+  const det=r.detail||[],bank=r.setor_bank||[],sup=r.bayar_supplier||[];
+  const selT=v=>v===null||v===undefined?'belum dihitung':!v?'cocok':(v>0?'+':'-')+fnum(Math.abs(v));
+  const doc=pdfDoc('Bukti Transfer Pusat',`Periode ${tglPdf(r.dari)} s/d ${tglPdf(r.sampai)}  |  Diambil ${tglPdf(r.tgl)}`,false);
+  const sel=+r.selisih||0,sisa=(+r.total_hitung||0)-(+r.total_bank||0);
+  pdfKartu(doc,[['Uang Dihitung',fmt(r.total_hitung),BIRU],['Selisih',selT(sel),sel?(sel>0?HIJAU:MERAH):null],['Setor Bank',fmt(r.total_bank)],['Sisa di Tangan',fmt(sisa)]]);
+  pdfTabel(doc,'Pencocokan Per Toko',['Toko','Hari','Uang Laci (Sistem)','Uang Dihitung','Selisih','Keterangan'],
+    det.map(x=>[x.toko,String(x.hari||0),fnum(x.sistem),x.hitung===null?'-':fnum(x.hitung),selT(x.selisih),x.ket||'']),
+    {num:[1,2,3,4],foot:['TOTAL','',fnum(r.total_sistem),fnum(r.total_
