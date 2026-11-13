@@ -816,6 +816,8 @@ function buildMonths(){
   // Rincian: default bulan lalu (yang biasanya dipresentasikan)
   const fr=el('f-bln-rin');
   if(fr){const lalu=now===1?12:now-1;fr.innerHTML=BLN.map((b,i)=>`<option value="${i+1}" ${i+1===lalu?'selected':''}>${b}</option>`).join('');}
+  // Januari: bulan lalu = Desember tahun lalu, jadi tahun Rekap Bulanan ikut tahun lalu
+  if(fr&&now===1&&el('f-tahun')&&!el('f-tahun').dataset.diset){el('f-tahun').value=new Date().getFullYear()-1;el('f-tahun').dataset.diset='1';}
 }
 
 // ===== NAVIGATE =====
@@ -1808,6 +1810,9 @@ async function kgSimpan(){
   if(!tgl){kAlert('kg-al','Isi tanggal dibayar','err');return;}
   if(jml<=0){kAlert('kg-al','Isi total gaji','err');return;}
   if(!kgEditId&&kgList.some(r=>r.toko===tk)&&!confirm(`Gaji ${tk} bulan ini sudah pernah diinput. Tetap tambah lagi?`))return;
+  const lain=kgList.filter(r=>r.id!==kgEditId);
+  if(tk==='Semua toko'&&lain.some(r=>r.toko!=='Semua toko')&&!confirm('Bulan ini sudah ada gaji per toko. Kalau diisi "Semua toko" juga, gajinya bisa terhitung DUA KALI.\n\n"Semua toko" hanya untuk gaji yang tidak dipisah per toko. Tetap simpan?'))return;
+  if(tk!=='Semua toko'&&lain.some(r=>r.toko==='Semua toko')&&!confirm('Bulan ini sudah ada gaji "Semua toko". Kalau diisi per toko juga, gajinya bisa terhitung DUA KALI.\n\nPastikan angka "Semua toko" tidak termasuk gaji '+tk+'. Tetap simpan?'))return;
   // tanggal disimpan di bulan gaji yang dipilih (supaya masuk rekap bulan yang benar)
   const tglSimpan=(+tgl.slice(0,4)===thn&&+tgl.slice(5,7)===bln)?tgl:`${thn}-${pad(bln)}-${pad(Math.min(+tgl.slice(8),lastDay(thn,bln)))}`;
   const row={jenis:'gaji',tgl:tglSimpan,toko:tk,pihak:null,no_ref:null,jumlah:jml,jml_orang:org,ket:(tglSimpan!==tgl?`dibayar ${tglIndo(tgl)}${ket?' · ':''}`:'')+ket,dibuat_oleh:userNow()};
