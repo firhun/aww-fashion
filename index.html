@@ -92,6 +92,7 @@ tr:hover td{background:#FAFAF8}
 .bb{background:var(--blue-l);color:var(--blue)}
 .al{padding:9px 13px;border-radius:var(--rs);font-size:13px;margin-bottom:10px;display:none;font-weight:500}
 .aok{background:var(--grn-l);color:var(--grn);border:1px solid #C0DD97;display:flex;align-items:center;gap:7px}
+.awarn{background:var(--amb-l);color:var(--amb);border:1px solid #F5C77E;display:flex;align-items:center;gap:7px}
 .aer{background:var(--red-l);color:var(--red);border:1px solid #F7C1C1;display:flex;align-items:center;gap:7px}
 .prev{background:linear-gradient(135deg,var(--blue) 0%,var(--blue2) 100%);border-radius:var(--r);padding:14px 18px;margin-bottom:14px;color:#fff}
 .prev-row{display:flex;justify-content:space-around;align-items:center;gap:10px;flex-wrap:wrap}
@@ -276,6 +277,7 @@ tr:hover td{background:#FAFAF8}
 <div id="page-input" class="page on">
   <div class="ph"><div class="pt">Input Setoran Harian</div><div class="ps">Catat setoran kasir per toko setiap hari</div></div>
   <div id="al-input" class="al"></div>
+  <div id="antrian-box" style="display:none"></div>
   <div class="card">
     <div class="g3" style="margin-bottom:12px">
       <div><label class="lbl">Tanggal</label><input type="date" id="i-tgl"></div>
@@ -681,8 +683,8 @@ tr:hover td{background:#FAFAF8}
 
 <script>
 // ===== CONFIG =====
-const SB_URL = 'https://daitsyyqplxlhdwjysry.supabase.co';
-const SB_KEY = 'sb_publishable_XCifcrLnRy9mPNH9F2JIXg_qfHB94tL';
+const SB_URL = 'https://ooroqxspqqzagkdpyldd.supabase.co'; // database baru (aww-keuangan). Lama: daitsyyqplxlhdwjysry
+const SB_KEY = 'sb_publishable_oxHTfQAS_3ZsGI2_p4kmDw_MIsgjr-5';
 const HDRS = {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
 
 // ===== AUTH =====
@@ -745,15 +747,36 @@ function gantiPassword(){
 }
 
 // ===== SUPABASE =====
+// Cache baca 2 menit: data yang sama tidak diambil ulang dari server (hemat kuota Supabase)
+const DB_CACHE=new Map(),DB_TTL=120000;
+let serverDiblokir=false;
 async function db(path, opts={}){
+  const baca=!opts.method||opts.method==='GET';
+  const key=path+'|'+((opts.headers||{}).Range||'');
+  if(baca){const c=DB_CACHE.get(key);if(c&&Date.now()-c.t<DB_TTL)return JSON.parse(c.v);}
+  else DB_CACHE.clear();
   try{
     const h={...HDRS,...(opts.headers||{})};
     const res=await fetch(SB_URL+'/rest/v1/'+path,{...opts,headers:h});
-    if(!res.ok){const t=await res.text();throw new Error(t);}
+    if(!res.ok){const t=await res.text();
+      if(res.status===402||/exceed_.*quota|restricted/i.test(t)){serverDiblokir=true;tandaiDiblokir();
+        const e=new Error('Server Supabase sedang DIBATASI karena kuota gratis habis. Data aman — akses normal lagi setelah kuota direset.');e.status=402;throw e;}
+      const e=new Error(t);e.status=res.status;throw e;}
+    if(serverDiblokir){serverDiblokir=false;setConn(true);}
     if(res.status===204||res.headers.get('content-length')==='0')return null;
-    return await res.json();
+    const txt=await res.text();
+    if(baca)DB_CACHE.set(key,{t:Date.now(),v:txt});
+    return txt?JSON.parse(txt):null;
   }catch(e){console.error('DB:',e);throw e;}
 }
+function tandaiDiblokir(){const d=el('conn-dot'),t=el('conn-txt');if(d)d.className='conn-dot err';if(t)t.textContent='Server dibatasi (kuota habis)';}
+// Hitung jumlah baris tanpa mengambil datanya
+async function dbCount(path){
+  const res=await fetch(SB_URL+'/rest/v1/'+path,{headers:{...HDRS,'Prefer':'count=exact','Range-Unit':'items','Range':'0-0'}});
+  if(res.status===402){tandaiDiblokir();throw new Error('Server dibatasi');}
+  const cr=res.headers.get('content-range')||'';return +(cr.split('/')[1]||0);
+}
+const SET_COLS='id,tgl,toko,kasir,laci,keluar,qris,bca,bni,bri,mandiri,real_cash,debit,glob';
 async function dbGet(table,q=''){return db(table+'?'+q+'&order=tgl.desc,id.desc');}
 async function dbPost(table,row){return db(table,{method:'POST',headers:{...HDRS,'Prefer':'return=minimal'},body:JSON.stringify(row)});}
 async function dbPatch(table,id,row){return db(table+'?id=eq.'+id,{method:'PATCH',headers:{...HDRS,'Prefer':'return=minimal'},body:JSON.stringify(row)});}
@@ -782,9 +805,9 @@ function setConn(ok){
 
 function alert2(msg,type){
   const a=el('al-input');if(!a)return;
-  a.className='al '+(type==='ok'?'aok':'aer');
-  a.innerHTML=(type==='ok'?'✓':'✗')+' '+msg;
-  clearTimeout(a._t);a._t=setTimeout(()=>{a.className='al';},4000);
+  a.className='al '+(type==='ok'?'aok':type==='warn'?'awarn':'aer');
+  a.innerHTML=(type==='ok'?'✓ ':type==='warn'?'':'✗ ')+msg;
+  clearTimeout(a._t);a._t=setTimeout(()=>{a.className='al';},type==='warn'?12000:4000);
 }
 
 // ===== SELECTS =====
@@ -866,6 +889,46 @@ function calcEdit(){
   el('ep-debit').textContent=fmt(debit);el('ep-keluar').textContent=fmt(keluar);el('ep-global').textContent=fmt(glob);
 }
 
+// ===== ANTRIAN SETORAN (mode cadangan saat server diblokir) =====
+const ANTRIAN_KEY='aww_antrian_setoran';
+function antrianAmbil(){try{return JSON.parse(localStorage.getItem(ANTRIAN_KEY)||'[]');}catch(e){return [];}}
+function antrianSimpan(a){try{localStorage.setItem(ANTRIAN_KEY,JSON.stringify(a));return true;}catch(e){return false;}}
+function antrianTambah(row){const a=antrianAmbil();a.push({...row,_qid:Date.now()+'-'+Math.random().toString(36).slice(2,7),_waktu:new Date().toLocaleString('id-ID')});const ok=antrianSimpan(a);renderAntrian();return ok;}
+function renderAntrian(){
+  const box=el('antrian-box');if(!box)return;const a=antrianAmbil();
+  if(!a.length){box.style.display='none';box.innerHTML='';return;}
+  box.style.display='';
+  box.innerHTML=`<div class="card" style="border-color:#EF9F27;background:var(--amb-l)">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+      <div><div style="font-weight:700;color:var(--amb)">⏳ ${a.length} setoran BELUM terkirim ke server</div>
+      <div style="font-size:12px;color:var(--tx2)">Tersimpan sementara di perangkat ini. Akan dikirim otomatis saat server normal. Jangan hapus riwayat browser &amp; pakai perangkat yang sama.</div></div>
+      <button class="btn bp bsm" id="antrian-btn" onclick="antrianKirim(true)">🔄 Kirim Sekarang</button>
+    </div>
+    <div class="tblw" style="background:var(--surf)"><table><thead><tr><th>Tanggal</th><th>Toko</th><th>Kasir</th><th class="num">Global Kasir</th><th>Diinput</th></tr></thead><tbody>
+    ${a.map(r=>`<tr><td>${esc(r.tgl)}</td><td>${esc(r.toko)}</td><td>${esc(r.kasir)}</td><td class="num">${fnum(r.glob)}</td><td style="font-size:11px;color:var(--tx3)">${esc(r._waktu)}</td></tr>`).join('')}
+    </tbody></table></div></div>`;
+}
+let antrianJalan=false;
+async function antrianKirim(manual){
+  if(antrianJalan)return;const a=antrianAmbil();if(!a.length){renderAntrian();return;}
+  antrianJalan=true;const b=el('antrian-btn');if(b){b.disabled=true;b.innerHTML='<span class="spin"></span> Mengirim...';}
+  let terkirim=0,gagal=null;
+  for(const r of a){
+    const {_qid,_waktu,...row}=r;
+    try{
+      // cegah dobel: cek apakah setoran yang sama sudah ada di server
+      const ada=await fetch(SB_URL+'/rest/v1/setoran?select=id&tgl=eq.'+row.tgl+'&toko=eq.'+encodeURIComponent(row.toko)+'&kasir=eq.'+encodeURIComponent(row.kasir)+'&glob=eq.'+row.glob+'&limit=1',{headers:HDRS});
+      if(ada.status===402){gagal='Server masih dibatasi (kuota habis).';tandaiDiblokir();break;}
+      if(!ada.ok)throw new Error(await ada.text());
+      if(!(await ada.json()).length)await dbPost('setoran',row);
+      antrianSimpan(antrianAmbil().filter(x=>x._qid!==_qid));terkirim++;
+    }catch(e){gagal=e.status===402?'Server masih dibatasi (kuota habis).':(e.message||'Gagal').slice(0,120);break;}
+  }
+  antrianJalan=false;renderAntrian();
+  if(terkirim)alert2(`${terkirim} setoran dari antrian berhasil dikirim ke server`,'ok');
+  else if(manual&&gagal)alert2('Belum bisa dikirim: '+gagal+' Data tetap aman di perangkat ini.','err');
+}
+
 // ===== INPUT SIMPAN =====
 async function simpan(){
   const tgl=gv('i-tgl'),tk=gv('i-toko'),kasir=gv('i-kasir').trim();
@@ -878,12 +941,16 @@ async function simpan(){
   const glob=laci+keluar+debit;
   const btn=el('btn-save');
   btn.disabled=true;btn.innerHTML='<span class="spin"></span> Menyimpan...';
+  const row={tgl,toko:tk,kasir,laci,keluar,qris,bca,bni,bri,mandiri,real_cash:real,debit,glob};
   try{
-    await dbPost('setoran',{tgl,toko:tk,kasir,laci,keluar,qris,bca,bni,bri,mandiri,real_cash:real,debit,glob});
+    await dbPost('setoran',row);
     alert2('Berhasil disimpan: '+tk+' | '+tgl+' | '+fmt(glob),'ok');
     resetForm();
   }catch(e){
-    alert2('Gagal simpan: '+e.message,'err');
+    if(!e.status||e.status===402||e.status>=500){ // server diblokir / internet putus -> simpan di perangkat
+      if(antrianTambah(row)){alert2('⏳ Server sedang bermasalah. Setoran '+tk+' '+tgl+' ('+fmt(glob)+') DISIMPAN SEMENTARA di perangkat ini dan akan dikirim otomatis. Jangan hapus riwayat browser.','warn');resetForm();}
+      else alert2('Gagal simpan dan perangkat tidak bisa menyimpan sementara. Catat manual dulu.','err');
+    } else alert2('Gagal simpan: '+e.message,'err');
   }
   btn.disabled=false;btn.innerHTML='💾 Simpan Data';
 }
@@ -908,10 +975,12 @@ async function loadRekap(){
     if(sel){sel.value=myToko;sel.disabled=true;sel.style.background='var(--surf2)';}
   }
 
+  // Hemat kuota: kalau tanggal kosong, otomatis bulan ini (bukan seluruh data dari awal)
+  if(!gv('f-dari')&&!gv('f-sampai')){const n=new Date();el('f-dari').value=`${n.getFullYear()}-${pad(n.getMonth()+1)}-01`;el('f-sampai').value=n.toLocaleDateString('sv-SE');}
   const fk=(gv('f-kasir')||'').trim().toLowerCase(),dr=gv('f-dari'),sp=gv('f-sampai');
   el('rekap-tbl').innerHTML='<div class="loading">Memuat data...</div>';
   el('rekap-mc').innerHTML='';
-  let q='select=*';
+  let q='select='+SET_COLS;
   if(tf) q+='&toko=eq.'+encodeURIComponent(tf);
   if(dr) q+='&tgl=gte.'+dr;
   if(sp) q+='&tgl=lte.'+sp;
@@ -1006,7 +1075,7 @@ async function loadBulanan(){
   const thn=+gv('f-tahun'),tf=gv('f-toko-bul');
   el('bul-tbl').innerHTML='<div class="loading">Memuat data...</div>';
   el('bul-mc').innerHTML='';
-  let q=`select=*&tgl=gte.${thn}-01-01&tgl=lte.${thn}-12-31&order=tgl.asc,id.asc`;
+  let q=`select=toko,tgl,laci,keluar,qris,bca,bni,bri,mandiri,debit,glob&tgl=gte.${thn}-01-01&tgl=lte.${thn}-12-31&order=tgl.asc,id.asc`;
   if(tf) q+='&toko=eq.'+encodeURIComponent(tf);
   try{
     const rows=await dbAll('setoran?'+q);
@@ -1130,8 +1199,8 @@ async function getDataBulan(thn,bln,tf){
   const rng=(y,m)=>`tgl=gte.${y}-${pad(m)}-01&tgl=lte.${y}-${pad(m)}-${pad(lastDay(y,m))}`;
   const ft=tf?'&toko=eq.'+encodeURIComponent(tf):'';
   const [rows,prev,pens]=await Promise.all([
-    dbAll(`setoran?select=*&${rng(thn,bln)}${ft}&order=tgl.asc,id.asc`),
-    dbAll(`setoran?select=*&${rng(pt,pb)}${ft}&order=tgl.asc,id.asc`),
+    dbAll(`setoran?select=${SET_COLS}&${rng(thn,bln)}${ft}&order=tgl.asc,id.asc`),
+    dbAll(`setoran?select=toko,tgl,laci,keluar,qris,bca,bni,bri,mandiri,debit,glob&${rng(pt,pb)}${ft}&order=tgl.asc,id.asc`),
     dbAll(`pengeluaran_bulanan?select=*&thn=eq.${thn}&bln=eq.${bln}${ft}&order=id.asc`)
   ]);
   let trf=[];try{trf=tpuItems(await dbAll(`transfer_pusat?select=*&${rng(thn,bln)}&order=tgl.asc,id.asc`));}catch(e){}
@@ -2271,8 +2340,9 @@ async function pdfTransferBulan(){
 async function loadPerToko(){
   const thn=+gv('f-tahun-pt'),bln=gv('f-bulan-pt');
   el('pertoko-tbl').innerHTML='<div class="loading">Memuat...</div>';el('pertoko-mc').innerHTML='';
-  let q=`select=*&tgl=gte.${thn}-01-01&tgl=lte.${thn}-12-31&order=tgl.asc,id.asc`;
-  if(bln){const p=String(bln).padStart(2,'0');q=`select=*&tgl=gte.${thn}-${p}-01&tgl=lte.${thn}-${p}-${lastDay(thn,+bln)}&order=tgl.asc,id.asc`;}
+  const PC='select=toko,tgl,laci,keluar,qris,bca,bni,bri,mandiri,debit,glob';
+  let q=`${PC}&tgl=gte.${thn}-01-01&tgl=lte.${thn}-12-31&order=tgl.asc,id.asc`;
+  if(bln){const p=String(bln).padStart(2,'0');q=`${PC}&tgl=gte.${thn}-${p}-01&tgl=lte.${thn}-${p}-${lastDay(thn,+bln)}&order=tgl.asc,id.asc`;}
   try{
     const rows=await dbAll('setoran?'+q);
     tmpPerToko=rows;
@@ -2442,9 +2512,9 @@ function exportCSV(){
 // ===== INFO & INIT =====
 async function updateInfo(){
   try{
-    const cnt=await dbAll('setoran?select=id&order=id.asc');
+    const cnt={length:await dbCount('setoran?select=id')};
     const u=sessionStorage.getItem('aww_auth')||'-';
-    el('info-conn').innerHTML=`URL: <strong>daitsyyqplxlhdwjysry.supabase.co</strong><br>Total record: <strong>${cnt.length}</strong><br>Toko: <strong>${toko.length}</strong><br>User login: <strong>${u}</strong><br>Role: <strong>${isAdmin(u)?'Admin (Akses Penuh)':'Kasir'}</strong>`;
+    el('info-conn').innerHTML=`URL: <strong>${SB_URL.replace('https://','')}</strong><br>Total record: <strong>${cnt.length}</strong><br>Toko: <strong>${toko.length}</strong><br>User login: <strong>${u}</strong><br>Role: <strong>${isAdmin(u)?'Admin (Akses Penuh)':'Kasir'}</strong>`;
   }catch(e){}
 }
 
@@ -2522,7 +2592,10 @@ async function init(){
   }
 
   // Test koneksi
-  try{await db('setoran?limit=1&select=id');setConn(true);}catch(e){setConn(false);}
+  try{await db('setoran?limit=1&select=id');setConn(true);}catch(e){if(e.status===402)tandaiDiblokir();else setConn(false);}
+  // Antrian setoran yang belum terkirim
+  renderAntrian();antrianKirim(false);
+  if(!window._antrianTimer){window._antrianTimer=setInterval(()=>{if(antrianAmbil().length)antrianKirim(false);},60000);window.addEventListener('online',()=>antrianKirim(false));}
 }
 
 // Cek session saat halaman dibuka
